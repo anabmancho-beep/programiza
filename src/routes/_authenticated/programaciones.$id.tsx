@@ -188,13 +188,13 @@ function PlanPage() {
           {(a.ai_generated || a.status === "borrador") && <div className="my-1 flex flex-wrap gap-2">{a.ai_generated && <AiBadge />}{a.status === "borrador" && <DraftBadge />}</div>}
           <p className="text-sm text-muted-foreground">{label(AREAS, a.area)} · {a.duration_min ?? "?"} min · {a.support_level}{a.materials ? ` · ${a.materials}` : ""}</p>
         </div>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {plan.level === "diaria" && <>
             <Button size="sm" variant="ghost" aria-label="Subir" onClick={() => move(a, -1)} disabled={i === 0}>↑</Button>
             <Button size="sm" variant="ghost" aria-label="Bajar" onClick={() => move(a, 1)} disabled={i === acts.length - 1}>↓</Button>
           </>}
           {a.status === "borrador" && <Button size="sm" onClick={() => approveActivity(a.id)}><Check className="mr-1 h-4 w-4" />Aprobar</Button>}
-          {a.status === "aprobado" && plan.person_id && <Button size="sm" variant="outline" onClick={() => setResultFor(a)}><ClipboardCheck className="mr-1 h-4 w-4" />Registrar resultado</Button>}
+          {a.status === "aprobado" && plan.person_id && <Button size="sm" variant="outline" onClick={() => setResultFor(a)}><ClipboardCheck className="mr-1 h-4 w-4" />Resultado</Button>}
           <Button size="sm" variant="ghost" aria-label={`Editar ${a.title}`} onClick={() => { setEditing(a); setActOpen(true); }}><Pencil className="h-4 w-4" /></Button>
           <Button size="sm" variant="ghost" aria-label={`Eliminar ${a.title}`} onClick={() => delActivity(a.id)}><Trash2 className="h-4 w-4" /></Button>
         </div>
@@ -248,7 +248,7 @@ function PlanPage() {
         </div>
         {acts.length === 0 ? <Empty title="Sin actividades"><p>Añade una nueva o cópiala del banco de actividades.</p></Empty>
           : plan.level === "semanal" ? (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {DAYS.map((d, di) => {
                 const list = acts.filter((a) => a.day_of_week === di + 1);
                 if (di >= 5 && list.length === 0) return null;
