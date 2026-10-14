@@ -45,7 +45,7 @@ function Hoy() {
         ? await supabase.from("activity_results").select("activity_id, result").eq("result_date", today).in("activity_id", todays.map((a) => a.id))
         : { data: [], error: null };
       if (e3) throw e3;
-      const byPerson = new Map<string, { id: string; code: string; acts: (typeof todays[number] & { done?: string })[] }>();
+      const byPerson = new Map<string, { id: string; code: string; acts: (typeof todays[number] & { done: string | undefined })[] }>();
       for (const a of todays) {
         const p = valid.find((x) => x.id === a.plan_id)!.persons!;
         const entry = byPerson.get(p.id) ?? { id: p.id, code: p.code, acts: [] };
