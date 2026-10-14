@@ -5,9 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loading, Notice } from "@/components/states";
-import { errMsg } from "@/lib/constants";
-
-export const PENDING_INVITE_KEY = "programiza.invite";
+import { errMsg, PENDING_INVITE_KEY } from "@/lib/constants";
 
 export const Route = createFileRoute("/invitacion/$token")({
   head: () => ({ meta: [
