@@ -17,8 +17,6 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedBancoRouteImport } from './routes/_authenticated/banco'
 import { Route as AuthenticatedCentroRouteImport } from './routes/_authenticated/centro'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
-import { Route as AuthenticatedPersonasRouteImport } from './routes/_authenticated/personas'
-import { Route as AuthenticatedProgramacionesRouteImport } from './routes/_authenticated/programaciones'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -59,17 +57,6 @@ const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   path: '/inicio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedPersonasRoute = AuthenticatedPersonasRouteImport.update({
-  id: '/personas',
-  path: '/personas',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedProgramacionesRoute =
-  AuthenticatedProgramacionesRouteImport.update({
-    id: '/programaciones',
-    path: '/programaciones',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -79,8 +66,6 @@ export interface FileRoutesByFullPath {
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
-  '/personas': typeof AuthenticatedPersonasRoute
-  '/programaciones': typeof AuthenticatedProgramacionesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -90,8 +75,6 @@ export interface FileRoutesByTo {
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
-  '/personas': typeof AuthenticatedPersonasRoute
-  '/programaciones': typeof AuthenticatedProgramacionesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -103,8 +86,6 @@ export interface FileRoutesById {
   '/_authenticated/banco': typeof AuthenticatedBancoRoute
   '/_authenticated/centro': typeof AuthenticatedCentroRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
-  '/_authenticated/personas': typeof AuthenticatedPersonasRoute
-  '/_authenticated/programaciones': typeof AuthenticatedProgramacionesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,8 +97,6 @@ export interface FileRouteTypes {
     | '/banco'
     | '/centro'
     | '/inicio'
-    | '/personas'
-    | '/programaciones'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -127,8 +106,6 @@ export interface FileRouteTypes {
     | '/banco'
     | '/centro'
     | '/inicio'
-    | '/personas'
-    | '/programaciones'
   id:
     | '__root__'
     | '/'
@@ -139,8 +116,6 @@ export interface FileRouteTypes {
     | '/_authenticated/banco'
     | '/_authenticated/centro'
     | '/_authenticated/inicio'
-    | '/_authenticated/personas'
-    | '/_authenticated/programaciones'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,20 +184,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInicioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/personas': {
-      id: '/_authenticated/personas'
-      path: '/personas'
-      fullPath: '/personas'
-      preLoaderRoute: typeof AuthenticatedPersonasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/programaciones': {
-      id: '/_authenticated/programaciones'
-      path: '/programaciones'
-      fullPath: '/programaciones'
-      preLoaderRoute: typeof AuthenticatedProgramacionesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
   }
 }
 
@@ -230,16 +191,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBancoRoute: typeof AuthenticatedBancoRoute
   AuthenticatedCentroRoute: typeof AuthenticatedCentroRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
-  AuthenticatedPersonasRoute: typeof AuthenticatedPersonasRoute
-  AuthenticatedProgramacionesRoute: typeof AuthenticatedProgramacionesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBancoRoute: AuthenticatedBancoRoute,
   AuthenticatedCentroRoute: AuthenticatedCentroRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
-  AuthenticatedPersonasRoute: AuthenticatedPersonasRoute,
-  AuthenticatedProgramacionesRoute: AuthenticatedProgramacionesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
