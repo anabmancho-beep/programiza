@@ -17,12 +17,13 @@ export type ActivityInput = {
   adaptations: string | null;
   day_of_week?: number | null;
   time_slot?: string | null;
+  objective_id?: string | null;
 };
 
 const empty: ActivityInput = { title: "", area: "autonomia_personal", duration_min: 30, support_level: "Supervisión", materials: "", steps: [], adaptations: "", day_of_week: null, time_slot: "" };
 
 export function ActivityDialog({
-  open, onOpenChange, initial, onSave, withSchedule, title = "Actividad",
+  open, onOpenChange, initial, onSave, withSchedule, title = "Actividad", objectives,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
@@ -30,6 +31,7 @@ export function ActivityDialog({
   onSave: (a: ActivityInput) => Promise<void>;
   withSchedule?: boolean;
   title?: string;
+  objectives?: { id: string; description: string }[];
 }) {
   const [a, setA] = useState<ActivityInput>(empty);
   const [steps, setSteps] = useState("");
@@ -82,6 +84,9 @@ export function ActivityDialog({
           )}
           {!withSchedule && a.time_slot !== undefined && (
             <Field id="a-slot2" label="Hora (opcional)"><Input id="a-slot2" type="time" value={a.time_slot ?? ""} onChange={(e) => setA({ ...a, time_slot: e.target.value })} /></Field>
+          )}
+          {objectives && objectives.length > 0 && (
+            <div className="sm:col-span-2"><Field id="a-obj" label="Objetivo al que contribuye"><NativeSelect id="a-obj" value={a.objective_id ?? ""} onChange={(e) => setA({ ...a, objective_id: e.target.value || null })}><option value="">Ninguno</option>{objectives.map((o) => <option key={o.id} value={o.id}>{o.description}</option>)}</NativeSelect></Field></div>
           )}
           <div className="sm:col-span-2"><Field id="a-steps" label="Pasos (uno por línea)"><Textarea id="a-steps" rows={5} value={steps} onChange={(e) => setSteps(e.target.value)} /></Field></div>
           <div className="sm:col-span-2"><Field id="a-adapt" label="Adaptaciones" hint="Describe apoyos, no datos identificativos."><Textarea id="a-adapt" rows={2} maxLength={1000} value={a.adaptations ?? ""} onChange={(e) => setA({ ...a, adaptations: e.target.value })} /></Field></div>

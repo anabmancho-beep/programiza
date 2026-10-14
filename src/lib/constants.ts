@@ -76,3 +76,10 @@ export const CONSENT_BADGE: Record<string, string> = {
   pendiente: "bg-warning text-warning-foreground",
   retirado: "bg-health text-health-foreground",
 };
+
+export const RESULTS: { value: "lograda" | "lograda_con_apoyo" | "no_lograda" | "no_realizada"; label: string }[] = [
+  { value: "lograda", label: "Lograda" },
+  { value: "lograda_con_apoyo", label: "Lograda con apoyo" },
+  { value: "no_lograda", label: "No lograda" },
+  { value: "no_realizada", label: "No realizada" },
+];

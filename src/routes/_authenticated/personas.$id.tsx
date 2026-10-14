@@ -15,6 +15,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Field, NativeSelect } from "@/components/forms";
 import { PageHeader, Loading, ErrorBox, Notice, Empty } from "@/components/states";
 import { PlanCreateDialog } from "@/components/PlanCreateDialog";
+import { EvolutionTab } from "@/components/EvolutionTab";
+import { ReportsTab } from "@/components/ReportsTab";
 import { AGE_RANGES, AUTONOMY_AREAS, AUTONOMY_LEVELS, CONSENT_BADGE, LEVELS, MAIN_TYPES, errMsg, fmtDate, label } from "@/lib/constants";
 
 type Person = Database["public"]["Tables"]["persons"]["Row"];
@@ -140,6 +142,8 @@ function PersonPage() {
           <TabsTrigger value="perfil">Perfil funcional</TabsTrigger>
           <TabsTrigger value="consentimiento">Consentimiento</TabsTrigger>
           <TabsTrigger value="programaciones">Programaciones</TabsTrigger>
+          <TabsTrigger value="evolucion">Evolución</TabsTrigger>
+          <TabsTrigger value="informes">Informes</TabsTrigger>
           {isAdmin && <TabsTrigger value="derechos">Derechos RGPD</TabsTrigger>}
         </TabsList>
 
@@ -211,6 +215,8 @@ function PersonPage() {
           <PlanCreateDialog open={newPlan} onOpenChange={setNewPlan} level="anual" personId={id} />
         </TabsContent>
 
+        <TabsContent value="evolucion"><EvolutionTab personId={id} /></TabsContent>
+        <TabsContent value="informes"><ReportsTab personId={id} code={saved.code} /></TabsContent>
         {isAdmin && (
           <TabsContent value="derechos">
             <div className="mt-4 space-y-4 rounded-xl border bg-card p-6">
