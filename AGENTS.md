@@ -15,3 +15,7 @@
 - Consent and plan-hierarchy rules are enforced by DB triggers (persons_guard, plans_guard), not only UI — the backend is the source of truth.
 - AI calls live in src/lib/ai.functions.ts (requireSupabaseAuth) + ai.server.ts; payloads are rebuilt server-side from a field whitelist (type, age range, autonomy levels, result counts) — never send codes, center, diagnosis or free text.
 - AI output is stored as status='borrador' + ai_generated; approval fields are only settable through approve_item() (trigger-enforced) so authorship can't be forged.
+- Restricted modules (behaviour ABC, anticipation plan, medication, appointments) have no table grants for authenticated; all reads/writes go through security-definer RPCs (get_behavior_module, get_health, save_sensitive, delete_sensitive) that check is_pro() and always log — so access can't bypass the audit log.
+- Family accounts (role familia) read only through family_* RPCs returning whitelisted columns; staff-only RLS on every table stays unchanged — avoids leaking internal notes via direct table reads.
+- Multi-center: profiles.center_id is the active center; user_roles holds one row per center and switch_center() changes it — all RLS keeps using current_center_id().
+- Pictogram files live in private bucket "pictogramas" under <center_id>/ and are shown via signed URLs.

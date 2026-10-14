@@ -7,13 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { errMsg } from "@/lib/constants";
+import { errMsg, PENDING_INVITE_KEY } from "@/lib/constants";
+import { useEffect } from "react";
+import { Link } from "@tanstack/react-router";
 
 export function Onboarding({ onSignOut }: { onSignOut: () => void }) {
   const qc = useQueryClient();
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [invite, setInvite] = useState<string | null>(null);
+  useEffect(() => { setInvite(localStorage.getItem(PENDING_INVITE_KEY)); }, []);
 
   async function run(kind: string, fn: () => Promise<{ error: unknown }>, ok: string) {
     setBusy(kind);
@@ -28,6 +32,12 @@ export function Onboarding({ onSignOut }: { onSignOut: () => void }) {
     <div className="min-h-screen bg-calm p-4 sm:p-10">
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-center gap-3"><Sprout className="h-8 w-8 text-primary" aria-hidden /><h1 className="text-3xl font-semibold">Bienvenida a Programiza</h1></div>
+        {invite && (
+          <div className="rounded-xl border-2 border-primary bg-card p-5" role="status">
+            <p className="font-bold">Tienes una invitación de familia pendiente.</p>
+            <Link to="/invitacion/$token" params={{ token: invite }} className="font-bold underline">Abrir la invitación</Link>
+          </div>
+        )}
         <p className="text-lg">Para empezar, crea tu centro (serás su administrador/a) o únete a uno con el código que te facilite tu administración.</p>
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="shadow-soft">
