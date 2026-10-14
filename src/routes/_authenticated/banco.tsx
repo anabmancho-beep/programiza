@@ -40,7 +40,8 @@ function Banco() {
   const target = plans.data?.find((p) => p.id === planId);
 
   async function addToBank(a: ActivityInput) {
-    const { error } = await supabase.from("activity_bank").insert({ ...a, center_id: me.data!.center!.id });
+    const { day_of_week: _d, time_slot: _t, ...rest } = a;
+    const { error } = await supabase.from("activity_bank").insert({ ...rest, center_id: me.data!.center!.id });
     if (error) { toast.error(errMsg(error)); throw error; }
     toast.success("Añadida al banco del centro");
     qc.invalidateQueries({ queryKey: ["bank"] });
