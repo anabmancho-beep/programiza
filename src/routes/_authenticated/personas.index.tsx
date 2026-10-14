@@ -10,18 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Field, NativeSelect } from "@/components/forms";
 import { PageHeader, Loading, ErrorBox, Empty, Notice } from "@/components/states";
-import { AGE_RANGES, MAIN_TYPES, errMsg, label } from "@/lib/constants";
+import { AGE_RANGES, MAIN_TYPES, errMsg, label, CONSENT_BADGE } from "@/lib/constants";
 
 export const Route = createFileRoute("/_authenticated/personas/")({
   head: () => ({ meta: [{ title: "Personas · Programiza" }, { name: "description", content: "Personas atendidas del centro, identificadas por seudónimo." }, { property: "og:title", content: "Personas · Programiza" }, { property: "og:description", content: "Personas atendidas del centro." }] }),
   component: Personas,
 });
 
-export const CONSENT_BADGE: Record<string, string> = {
-  otorgado: "bg-success text-success-foreground",
-  pendiente: "bg-warning text-warning-foreground",
-  retirado: "bg-health text-health-foreground",
-};
 
 function Personas() {
   const me = useMe();

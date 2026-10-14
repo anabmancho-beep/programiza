@@ -17,6 +17,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedBancoRouteImport } from './routes/_authenticated/banco'
 import { Route as AuthenticatedCentroRouteImport } from './routes/_authenticated/centro'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
+import { Route as AuthenticatedPersonasIndexRouteImport } from './routes/_authenticated/personas.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,6 +58,12 @@ const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   path: '/inicio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPersonasIndexRoute =
+  AuthenticatedPersonasIndexRouteImport.update({
+    id: '/personas/',
+    path: '/personas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/personas/': typeof AuthenticatedPersonasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/personas': typeof AuthenticatedPersonasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/_authenticated/banco': typeof AuthenticatedBancoRoute
   '/_authenticated/centro': typeof AuthenticatedCentroRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
+  '/_authenticated/personas/': typeof AuthenticatedPersonasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/banco'
     | '/centro'
     | '/inicio'
+    | '/personas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/banco'
     | '/centro'
     | '/inicio'
+    | '/personas'
   id:
     | '__root__'
     | '/'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/banco'
     | '/_authenticated/centro'
     | '/_authenticated/inicio'
+    | '/_authenticated/personas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInicioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/personas/': {
+      id: '/_authenticated/personas/'
+      path: '/personas'
+      fullPath: '/personas/'
+      preLoaderRoute: typeof AuthenticatedPersonasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -191,12 +211,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBancoRoute: typeof AuthenticatedBancoRoute
   AuthenticatedCentroRoute: typeof AuthenticatedCentroRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
+  AuthenticatedPersonasIndexRoute: typeof AuthenticatedPersonasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBancoRoute: AuthenticatedBancoRoute,
   AuthenticatedCentroRoute: AuthenticatedCentroRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
+  AuthenticatedPersonasIndexRoute: AuthenticatedPersonasIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -70,3 +70,9 @@ export function errMsg(e: unknown): string {
 
 export const fmtDate = (d?: string | null) =>
   d ? new Date(d + (d.length === 10 ? "T00:00:00" : "")).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : "—";
+
+export const CONSENT_BADGE: Record<string, string> = {
+  otorgado: "bg-success text-success-foreground",
+  pendiente: "bg-warning text-warning-foreground",
+  retirado: "bg-health text-health-foreground",
+};
