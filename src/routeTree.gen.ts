@@ -20,6 +20,7 @@ import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPersonasIndexRouteImport } from './routes/_authenticated/personas.index'
 import { Route as AuthenticatedPersonasIdRouteImport } from './routes/_authenticated/personas.$id'
 import { Route as AuthenticatedProgramacionesIndexRouteImport } from './routes/_authenticated/programaciones.index'
+import { Route as AuthenticatedProgramacionesIdRouteImport } from './routes/_authenticated/programaciones.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -77,6 +78,12 @@ const AuthenticatedProgramacionesIndexRoute =
     path: '/programaciones/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedProgramacionesIdRoute =
+  AuthenticatedProgramacionesIdRouteImport.update({
+    id: '/programaciones/$id',
+    path: '/programaciones/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/personas/$id': typeof AuthenticatedPersonasIdRoute
+  '/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/personas/': typeof AuthenticatedPersonasIndexRoute
   '/programaciones/': typeof AuthenticatedProgramacionesIndexRoute
 }
@@ -99,6 +107,7 @@ export interface FileRoutesByTo {
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/personas/$id': typeof AuthenticatedPersonasIdRoute
+  '/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/personas': typeof AuthenticatedPersonasIndexRoute
   '/programaciones': typeof AuthenticatedProgramacionesIndexRoute
 }
@@ -113,6 +122,7 @@ export interface FileRoutesById {
   '/_authenticated/centro': typeof AuthenticatedCentroRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/personas/$id': typeof AuthenticatedPersonasIdRoute
+  '/_authenticated/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/_authenticated/personas/': typeof AuthenticatedPersonasIndexRoute
   '/_authenticated/programaciones/': typeof AuthenticatedProgramacionesIndexRoute
 }
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/centro'
     | '/inicio'
     | '/personas/$id'
+    | '/programaciones/$id'
     | '/personas/'
     | '/programaciones/'
   fileRoutesByTo: FileRoutesByTo
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/centro'
     | '/inicio'
     | '/personas/$id'
+    | '/programaciones/$id'
     | '/personas'
     | '/programaciones'
   id:
@@ -152,6 +164,7 @@ export interface FileRouteTypes {
     | '/_authenticated/centro'
     | '/_authenticated/inicio'
     | '/_authenticated/personas/$id'
+    | '/_authenticated/programaciones/$id'
     | '/_authenticated/personas/'
     | '/_authenticated/programaciones/'
   fileRoutesById: FileRoutesById
@@ -243,6 +256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProgramacionesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/programaciones/$id': {
+      id: '/_authenticated/programaciones/$id'
+      path: '/programaciones/$id'
+      fullPath: '/programaciones/$id'
+      preLoaderRoute: typeof AuthenticatedProgramacionesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -251,6 +271,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCentroRoute: typeof AuthenticatedCentroRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedPersonasIdRoute: typeof AuthenticatedPersonasIdRoute
+  AuthenticatedProgramacionesIdRoute: typeof AuthenticatedProgramacionesIdRoute
   AuthenticatedPersonasIndexRoute: typeof AuthenticatedPersonasIndexRoute
   AuthenticatedProgramacionesIndexRoute: typeof AuthenticatedProgramacionesIndexRoute
 }
@@ -260,6 +281,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCentroRoute: AuthenticatedCentroRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedPersonasIdRoute: AuthenticatedPersonasIdRoute,
+  AuthenticatedProgramacionesIdRoute: AuthenticatedProgramacionesIdRoute,
   AuthenticatedPersonasIndexRoute: AuthenticatedPersonasIndexRoute,
   AuthenticatedProgramacionesIndexRoute: AuthenticatedProgramacionesIndexRoute,
 }
