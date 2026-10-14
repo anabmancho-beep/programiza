@@ -45,8 +45,10 @@ export function ReportsTab({ personId, code }: { personId: string; code: string 
     } catch (err) { toast.error(errMsg(err)); } finally { setBusy(false); }
   }
   async function saveText(id: string) {
+    const wasApproved = q.data?.find((r) => r.id === id)?.status === "aprobado";
     const { error } = await supabase.from("reports").update({ content: editing[id] ?? "" }).eq("id", id);
     if (error) { toast.error(errMsg(error)); return; }
+    if (wasApproved) toast.info("El informe ha vuelto a borrador. Hay que aprobarlo de nuevo.");
     await supabase.rpc("log_access", { _person_id: personId, _action: "editar" });
     setEditing((s) => { const n = { ...s }; delete n[id]; return n; });
     qc.invalidateQueries({ queryKey: ["reports", personId] });
@@ -69,7 +71,7 @@ export function ReportsTab({ personId, code }: { personId: string; code: string 
         <Field id="rf" label="Desde"><Input id="rf" type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></Field>
         <Field id="rt" label="Hasta"><Input id="rt" type="date" value={to} onChange={(e) => setTo(e.target.value)} /></Field>
         <Button type="submit" disabled={busy}>{busy ? "Redactando… (puede tardar)" : "Nuevo informe"}</Button>
-        <p className="basis-full text-sm text-muted-foreground">La IA solo recibe recuentos de resultados por área, objetivo y mes. No recibe el código, las observaciones ni el diagnóstico.</p>
+        <p className="basis-full text-sm text-muted-foreground">La IA solo recibe recuentos de resultados por área, mes y objetivo (como «Objetivo 1», «Objetivo 2»…). No recibe el código, las descripciones de los objetivos, las observaciones ni el diagnóstico.</p>
       </form>
       {q.isLoading ? <Loading /> : q.error ? <ErrorBox error={q.error} /> : q.data!.length === 0 ? <Empty title="Sin informes" /> : q.data!.map((r) => (
         <article key={r.id} className={`rounded-xl border p-5 ${r.status === "borrador" ? "border-dashed border-warning-foreground/50 bg-warning/20" : "bg-card"}`}>

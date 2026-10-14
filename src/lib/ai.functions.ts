@@ -120,28 +120,40 @@ export const draftReport = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { aiObject, AiError } = await import("./ai.server");
     if (data.to < data.from) return { ok: false as const, error: "La fecha final es anterior a la inicial." };
-    const { data: person } = await supabase.from("persons").select("id, center_id").eq("id", data.personId).maybeSingle();
+    const { data: person } = await supabase.from("persons").select("id, center_id, consent_status").eq("id", data.personId).maybeSingle();
     if (!person) return { ok: false as const, error: "Persona no encontrada" };
+    if (person.consent_status !== "otorgado") return { ok: false as const, error: "Sin consentimiento otorgado no se pueden generar informes." };
     const { data: rows, error } = await supabase
       .from("activity_results")
-      .select("result, result_date, plan_activities(area, objective_id, plan_objectives(description, status))")
-      .eq("person_id", data.personId).gte("result_date", data.from).lte("result_date", data.to);
+      .select("result, result_date, plan_activities(area, objective_id, plan_objectives(id, area, description, status))")
+      .eq("person_id", data.personId).gte("result_date", data.from).lte("result_date", data.to)
+      .order("result_date", { ascending: true });
     if (error) return { ok: false as const, error: error.message };
 
     type Bucket = { total: number; lograda: number; lograda_con_apoyo: number; no_lograda: number; no_realizada: number };
     const nb = (): Bucket => ({ total: 0, lograda: 0, lograda_con_apoyo: 0, no_lograda: 0, no_realizada: 0 });
-    const all = nb(); const byArea: Record<string, Bucket> = {}; const byObj: Record<string, Bucket> = {}; const byMonth: Record<string, Bucket> = {};
+    const all = nb(); const byArea: Record<string, Bucket> = {}; const byMonth: Record<string, Bucket> = {};
+    // Objective descriptions never leave the server: AI sees "Objetivo N · Área" only.
+    const byObjAi: Record<string, Bucket> = {}; const byObjReal: Record<string, Bucket> = {};
+    const labels = new Map<string, { n: number; label: string; description: string }>();
+    const NONE = "Sin objetivo vinculado";
     for (const r of rows ?? []) {
-      const act = r.plan_activities as unknown as { area: string; plan_objectives: { description: string; status: string } | null } | null;
+      const act = r.plan_activities as unknown as { area: string; plan_objectives: { id: string; area: string; description: string; status: string } | null } | null;
       const k = r.result as keyof Bucket;
       const add = (b: Bucket) => { b.total++; b[k]++; };
       add(all);
       add((byArea[AREA_LABEL[act?.area ?? ""] ?? "Sin área"] ??= nb()));
-      const obj = act?.plan_objectives && act.plan_objectives.status === "aprobado" ? act.plan_objectives.description : "Sin objetivo vinculado";
-      add((byObj[obj] ??= nb()));
+      const o = act?.plan_objectives && act.plan_objectives.status === "aprobado" ? act.plan_objectives : null;
+      if (o) {
+        let l = labels.get(o.id);
+        if (!l) { const n = labels.size + 1; l = { n, label: `Objetivo ${n} · ${AREA_LABEL[o.area] ?? "Sin área"}`, description: o.description }; labels.set(o.id, l); }
+        add((byObjAi[l.label] ??= nb()));
+        add((byObjReal[`Objetivo ${l.n}: ${l.description}`] ??= nb()));
+      } else { add((byObjAi[NONE] ??= nb())); add((byObjReal[NONE] ??= nb())); }
       add((byMonth[r.result_date.slice(0, 7)] ??= nb()));
     }
-    const stats = { periodo: { desde: data.from, hasta: data.to }, total: all, por_area: byArea, por_objetivo: byObj, por_mes: byMonth, etiquetas: RESULT_LABEL };
+    const aiStats = { periodo: { desde: data.from, hasta: data.to }, total: all, por_area: byArea, por_objetivo: byObjAi, por_mes: byMonth, etiquetas: RESULT_LABEL };
+    const stats = { ...aiStats, por_objetivo: byObjReal };
 
     let content: string; let ai = false;
     if (all.total === 0) {
@@ -149,12 +161,19 @@ export const draftReport = createServerFn({ method: "POST" })
     } else {
       const instructions = `${SAFETY}
 Tarea: redacta un informe de evolución (4-8 párrafos breves) usando EXCLUSIVAMENTE las cifras del JSON. No inventes cifras, porcentajes, observaciones ni hechos. Calcula porcentajes solo a partir de los recuentos dados.
+Los objetivos aparecen como etiquetas genéricas ("Objetivo 1", "Objetivo 2"…). Menciónalos exactamente con esa etiqueta ("Objetivo N") y no intentes adivinar su contenido.
 Si un área u objetivo tiene menos de 3 registros, di expresamente que los datos son insuficientes para concluir. Si faltan áreas u objetivos, dilo.
 No te refieras a la persona con nombre ni código: usa "la persona".
 Termina con propuestas educativas generales para el siguiente periodo, sin recomendaciones clínicas.`;
       try {
-        const out = await aiObject(z.object({ texto: z.string() }), instructions, JSON.stringify(stats));
-        content = out.texto.trim(); ai = true;
+        const out = await aiObject(z.object({ texto: z.string() }), instructions, JSON.stringify(aiStats));
+        const byN = new Map([...labels.values()].map((l) => [l.n, l.description]));
+        // Rebuild on the server: "Objetivo N" -> "Objetivo N («descripción»)"
+        content = out.texto.trim().replace(/\bObjetivo (\d+)\b(?:\s*·\s*[^,.;:()\n]+)?/g, (m, n) => {
+          const d = byN.get(Number(n));
+          return d ? `Objetivo ${n} («${d}»)` : m;
+        });
+        ai = true;
       } catch (e) {
         return { ok: false as const, error: e instanceof AiError ? e.message : "Error de IA" };
       }
