@@ -2,7 +2,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Sparkles, Check, ClipboardCheck, FileDown } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { suggestPlan } from "@/lib/ai.functions";
+import { dailyAgendaPdf, weeklyAgendaPdf } from "@/lib/pdf";
+import { ObjectivesSection, AiBadge, DraftBadge, ApprovedInfo } from "@/components/ObjectivesSection";
+import { ResultDialog } from "@/components/ResultDialog";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useMe } from "@/lib/me";
@@ -38,6 +43,12 @@ function PlanPage() {
   const [dupDate, setDupDate] = useState("");
   const [applyOpen, setApplyOpen] = useState(false);
   const [target, setTarget] = useState("");
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiArea, setAiArea] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiNote, setAiNote] = useState<{ clinical: string | null; rhythm: string } | null>(null);
+  const [resultFor, setResultFor] = useState<Activity | null>(null);
+  const suggest = useServerFn(suggestPlan);
 
   const q = useQuery({
     queryKey: ["plan", id],
@@ -45,13 +56,16 @@ function PlanPage() {
       const { data, error } = await supabase.from("plans").select("*, persons(id, code, consent_status), parent:parent_id(id, title, level)").eq("id", id).maybeSingle();
       if (error) throw error;
       if (!data) throw new Error("Programación no encontrada");
-      const [children, acts] = await Promise.all([
+      const [children, acts, objs, pobjs] = await Promise.all([
         supabase.from("plans").select("id, title, level, start_date, end_date").eq("parent_id", id).order("start_date"),
         supabase.from("plan_activities").select("*").eq("plan_id", id).order("day_of_week", { nullsFirst: true }).order("time_slot", { nullsFirst: true }).order("position"),
+        supabase.from("plan_objectives").select("*").eq("plan_id", id).order("created_at"),
+        data.parent_id ? supabase.from("plan_objectives").select("id, description").eq("plan_id", data.parent_id).eq("status", "aprobado") : Promise.resolve({ data: [], error: null }),
       ]);
+      if (objs.error) throw objs.error;
       if (children.error) throw children.error;
       if (acts.error) throw acts.error;
-      return { plan: data, children: children.data, acts: acts.data };
+      return { plan: data, children: children.data, acts: acts.data, objectives: objs.data, parentObjectives: (pobjs.data ?? []) as { id: string; description: string }[] };
     },
   });
 
@@ -68,7 +82,9 @@ function PlanPage() {
 
   if (q.isLoading) return <Loading />;
   if (q.error) return <ErrorBox error={q.error} />;
-  const { plan, children, acts } = q.data!;
+  const { plan, children, acts, objectives, parentObjectives } = q.data!;
+  const approvedObjectives = objectives.filter((o) => o.status === "aprobado");
+  const approvedActs = acts.filter((a) => a.status === "aprobado");
   const child = CHILD_LEVEL[plan.level];
   const parent = plan.parent as unknown as { id: string; title: string; level: string } | null;
   const consentOk = plan.is_template || plan.persons?.consent_status === "otorgado";
@@ -84,6 +100,34 @@ function PlanPage() {
     await logEdit();
     toast.success("Actividad guardada");
     refresh();
+  }
+  async function runAi() {
+    setAiBusy(true);
+    try {
+      const r = await suggest({ data: { planId: id, area: (aiArea || null) as "naturaleza" | null } });
+      if (!r.ok) { toast.error(r.error); return; }
+      setAiNote({ clinical: r.clinicalNote, rhythm: r.rhythm });
+      toast.success(`Borradores creados: ${r.objectives} objetivos y ${r.activities} actividades. Revísalos y apruébalos.`);
+      refresh();
+    } catch (e) {
+      toast.error(errMsg(e));
+    } finally {
+      setAiBusy(false);
+    }
+  }
+  async function approveActivity(aid: string) {
+    const { error } = await supabase.rpc("approve_item", { _kind: "actividad", _id: aid });
+    if (error) { toast.error(errMsg(error)); return; }
+    await logEdit();
+    toast.success("Actividad aprobada");
+    refresh();
+  }
+  async function pdf() {
+    const code = plan.persons?.code ?? "Plantilla";
+    if (approvedActs.length === 0) { toast.error("No hay actividades aprobadas para exportar"); return; }
+    if (plan.level === "diaria") dailyAgendaPdf(code, plan.title, fmtDate(plan.start_date), [...approvedActs].sort((a, b) => a.position - b.position).map((a) => ({ ...a, area: label(AREAS, a.area) })));
+    else weeklyAgendaPdf(code, plan.title, `${fmtDate(plan.start_date)} – ${fmtDate(plan.end_date)}`, approvedActs.map((a) => ({ ...a, area: label(AREAS, a.area) })));
+    if (plan.person_id) await supabase.rpc("log_access", { _person_id: plan.person_id, _action: "exportar_pdf" });
   }
   async function delActivity(aid: string) {
     const { error } = await supabase.from("plan_activities").delete().eq("id", aid);
@@ -137,23 +181,28 @@ function PlanPage() {
   }
 
   const ActRow = ({ a, i }: { a: Activity; i: number }) => (
-    <li className="rounded-lg border bg-card p-4">
+    <li className={`rounded-lg border p-4 ${a.status === "borrador" ? "border-dashed border-warning-foreground/50 bg-warning/30" : "bg-card"}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="font-bold">{plan.level === "diaria" && <span className="mr-2 text-primary">{i + 1}.</span>}{a.time_slot && <span className="mr-2 text-muted-foreground">{a.time_slot.slice(0, 5)}</span>}{a.title}</p>
+          {(a.ai_generated || a.status === "borrador") && <div className="my-1 flex flex-wrap gap-2">{a.ai_generated && <AiBadge />}{a.status === "borrador" && <DraftBadge />}</div>}
           <p className="text-sm text-muted-foreground">{label(AREAS, a.area)} · {a.duration_min ?? "?"} min · {a.support_level}{a.materials ? ` · ${a.materials}` : ""}</p>
         </div>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {plan.level === "diaria" && <>
             <Button size="sm" variant="ghost" aria-label="Subir" onClick={() => move(a, -1)} disabled={i === 0}>↑</Button>
             <Button size="sm" variant="ghost" aria-label="Bajar" onClick={() => move(a, 1)} disabled={i === acts.length - 1}>↓</Button>
           </>}
+          {a.status === "borrador" && <Button size="sm" onClick={() => approveActivity(a.id)}><Check className="mr-1 h-4 w-4" />Aprobar</Button>}
+          {a.status === "aprobado" && plan.person_id && <Button size="sm" variant="outline" onClick={() => setResultFor(a)}><ClipboardCheck className="mr-1 h-4 w-4" />Resultado</Button>}
           <Button size="sm" variant="ghost" aria-label={`Editar ${a.title}`} onClick={() => { setEditing(a); setActOpen(true); }}><Pencil className="h-4 w-4" /></Button>
           <Button size="sm" variant="ghost" aria-label={`Eliminar ${a.title}`} onClick={() => delActivity(a.id)}><Trash2 className="h-4 w-4" /></Button>
         </div>
       </div>
       {a.steps.length > 0 && <ol className="mt-2 list-decimal pl-6 text-sm">{a.steps.map((s, k) => <li key={k}>{s}</li>)}</ol>}
       {a.adaptations && <p className="mt-2 text-sm"><span className="font-bold">Adaptaciones:</span> {a.adaptations}</p>}
+      {a.objective_id && <p className="mt-1 text-sm text-muted-foreground">Objetivo: {objectives.find((o) => o.id === a.objective_id)?.description}</p>}
+      {a.status === "aprobado" && a.ai_generated && <ApprovedInfo at={a.approved_at} />}
     </li>
   );
 
@@ -166,18 +215,15 @@ function PlanPage() {
       </div>
       <PageHeader title={plan.title} subtitle={`${label(LEVELS, plan.level)}${plan.is_template ? " · Plantilla" : ""} · ${fmtDate(plan.start_date)} – ${fmtDate(plan.end_date)}`}
         actions={<>
+          {plan.person_id && <Button onClick={() => { setAiNote(null); setAiOpen(true); }}><Sparkles className="mr-2 h-4 w-4" />Sugerir con IA</Button>}
+          {(plan.level === "semanal" || plan.level === "diaria") && <Button variant="outline" onClick={pdf}><FileDown className="mr-2 h-4 w-4" />Descargar PDF</Button>}
           {plan.level === "semanal" && !plan.is_template && <Button variant="secondary" onClick={() => setDupOpen(true)}>Duplicar semana</Button>}
           {plan.is_template ? (parentLevel && <Button onClick={() => setApplyOpen(true)}>Aplicar a una persona</Button>)
             : <Button variant="outline" onClick={() => copyPlan({ asTemplate: true })}>Guardar como plantilla</Button>}
           <Button variant="ghost" onClick={deletePlan}>Eliminar</Button>
         </>} />
       {!consentOk && <div className="mb-4"><Notice title="Consentimiento no otorgado">No se pueden crear nuevas programaciones para esta persona.</Notice></div>}
-      {plan.objectives && (
-        <section className="mb-6 rounded-xl border bg-card p-5">
-          <h2 className="mb-2 text-xl font-semibold">Objetivos</h2>
-          <ul className="list-disc pl-6">{plan.objectives.split("\n").filter(Boolean).map((o, i) => <li key={i}>{o}</li>)}</ul>
-        </section>
-      )}
+      <ObjectivesSection planId={plan.id} centerId={plan.center_id} objectives={objectives} parentObjectives={parentObjectives} freeText={plan.objectives} onChange={refresh} onLog={() => { logEdit(); }} />
 
       {child && !plan.is_template && (
         <section className="mb-6">
@@ -202,7 +248,7 @@ function PlanPage() {
         </div>
         {acts.length === 0 ? <Empty title="Sin actividades"><p>Añade una nueva o cópiala del banco de actividades.</p></Empty>
           : plan.level === "semanal" ? (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {DAYS.map((d, di) => {
                 const list = acts.filter((a) => a.day_of_week === di + 1);
                 if (di >= 5 && list.length === 0) return null;
@@ -221,7 +267,7 @@ function PlanPage() {
           )}
       </section>
 
-      <ActivityDialog open={actOpen} onOpenChange={setActOpen} initial={editing as Partial<ActivityInput> | null} onSave={saveActivity} withSchedule={plan.level === "semanal"} title={editing?.id ? "Editar actividad" : "Nueva actividad"} />
+      <ActivityDialog open={actOpen} onOpenChange={setActOpen} initial={editing as Partial<ActivityInput> | null} onSave={saveActivity} withSchedule={plan.level === "semanal"} objectives={approvedObjectives} title={editing?.id ? "Editar actividad" : "Nueva actividad"} />
       <BankPicker open={bankOpen} onOpenChange={setBankOpen} onPick={(a) => { setEditing({ ...a } as Partial<Activity>); setActOpen(true); }} />
 
       <Dialog open={dupOpen} onOpenChange={setDupOpen}>
@@ -247,7 +293,24 @@ function PlanPage() {
             <Button onClick={() => { const t = targets.data?.find((x) => x.id === target); if (!t) { toast.error("Elige una programación"); return; } copyPlan({ asTemplate: false, parentId: t.id, personId: t.person_id }); }}>Aplicar</Button></DialogFooter>
         </DialogContent>
       </Dialog>
-      <Badge className="hidden" />
+      <ResultDialog activity={resultFor} onClose={() => setResultFor(null)} />
+      <Dialog open={aiOpen} onOpenChange={setAiOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Sugerir con IA</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <Notice title="Qué se envía a la IA">Solo el tipo de discapacidad o trastorno, el rango de edad, los niveles de autonomía y el nivel de esta programación. Nunca el código, el centro, el diagnóstico ni los textos libres.</Notice>
+            <Field id="ai-area" label="Área preferente (opcional)"><NativeSelect id="ai-area" value={aiArea} onChange={(e) => setAiArea(e.target.value)}><option value="">Cualquiera</option>{AREAS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}</NativeSelect></Field>
+            <p className="text-sm text-muted-foreground">Las propuestas se guardan como borrador con la marca «Generado con IA». Debes revisarlas y aprobarlas. La IA no diagnostica ni recomienda tratamientos.</p>
+            {aiNote && (
+              <div className="space-y-2" role="status">
+                {aiNote.clinical && <Notice tone="health" title="Requiere criterio profesional">{aiNote.clinical}</Notice>}
+                <p><span className="font-bold">Ritmo propuesto:</span> {aiNote.rhythm}</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter><Button variant="outline" onClick={() => setAiOpen(false)}>Cerrar</Button><Button onClick={runAi} disabled={aiBusy}>{aiBusy ? "Generando… (puede tardar un minuto)" : "Generar borrador"}</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

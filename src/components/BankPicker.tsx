@@ -27,7 +27,7 @@ export function BankPicker({ open, onOpenChange, onPick }: { open: boolean; onOp
         <NativeSelect aria-label="Filtrar por área" value={area} onChange={(e) => setArea(e.target.value)}><option value="">Todas las áreas</option>{AREAS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}</NativeSelect>
         {q.isLoading ? <Loading /> : q.error ? <ErrorBox error={q.error} /> : (
           <ul className="space-y-2">
-            {q.data!.filter((a) => !area || a.area === area).map((a) => (
+            {(q.data ?? []).filter((a) => !area || a.area === area).map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
                 <div><p className="font-bold">{a.title}</p><p className="text-sm text-muted-foreground">{label(AREAS, a.area)} · {a.duration_min ?? "?"} min</p></div>
                 <Button size="sm" onClick={() => { onOpenChange(false); onPick({ title: a.title, area: a.area, duration_min: a.duration_min, support_level: a.support_level, materials: a.materials, steps: a.steps, adaptations: a.adaptations }); }}>Copiar y adaptar</Button>

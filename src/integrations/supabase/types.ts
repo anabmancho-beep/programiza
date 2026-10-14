@@ -99,6 +99,67 @@ export type Database = {
           },
         ]
       }
+      activity_results: {
+        Row: {
+          activity_id: string
+          center_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          person_id: string | null
+          result: Database["public"]["Enums"]["result_kind"]
+          result_date: string
+          support_used: string | null
+        }
+        Insert: {
+          activity_id: string
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          person_id?: string | null
+          result: Database["public"]["Enums"]["result_kind"]
+          result_date?: string
+          support_used?: string | null
+        }
+        Update: {
+          activity_id?: string
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          person_id?: string | null
+          result?: Database["public"]["Enums"]["result_kind"]
+          result_date?: string
+          support_used?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_results_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "plan_activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_results_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_results_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       centers: {
         Row: {
           created_at: string
@@ -203,6 +264,9 @@ export type Database = {
       plan_activities: {
         Row: {
           adaptations: string | null
+          ai_generated: boolean
+          approved_at: string | null
+          approved_by: string | null
           area: string
           center_id: string
           created_at: string
@@ -210,8 +274,10 @@ export type Database = {
           duration_min: number | null
           id: string
           materials: string | null
+          objective_id: string | null
           plan_id: string
           position: number
+          status: Database["public"]["Enums"]["item_status"]
           steps: string[]
           support_level: string | null
           time_slot: string | null
@@ -219,6 +285,9 @@ export type Database = {
         }
         Insert: {
           adaptations?: string | null
+          ai_generated?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
           area: string
           center_id: string
           created_at?: string
@@ -226,8 +295,10 @@ export type Database = {
           duration_min?: number | null
           id?: string
           materials?: string | null
+          objective_id?: string | null
           plan_id: string
           position?: number
+          status?: Database["public"]["Enums"]["item_status"]
           steps?: string[]
           support_level?: string | null
           time_slot?: string | null
@@ -235,6 +306,9 @@ export type Database = {
         }
         Update: {
           adaptations?: string | null
+          ai_generated?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
           area?: string
           center_id?: string
           created_at?: string
@@ -242,8 +316,10 @@ export type Database = {
           duration_min?: number | null
           id?: string
           materials?: string | null
+          objective_id?: string | null
           plan_id?: string
           position?: number
+          status?: Database["public"]["Enums"]["item_status"]
           steps?: string[]
           support_level?: string | null
           time_slot?: string | null
@@ -258,7 +334,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "plan_activities_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "plan_objectives"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "plan_activities_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_objectives: {
+        Row: {
+          ai_generated: boolean
+          approved_at: string | null
+          approved_by: string | null
+          area: string
+          center_id: string
+          created_at: string
+          criterion: string | null
+          deadline: string | null
+          description: string
+          id: string
+          indicator: string | null
+          parent_objective_id: string | null
+          plan_id: string
+          status: Database["public"]["Enums"]["item_status"]
+        }
+        Insert: {
+          ai_generated?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          area: string
+          center_id: string
+          created_at?: string
+          criterion?: string | null
+          deadline?: string | null
+          description: string
+          id?: string
+          indicator?: string | null
+          parent_objective_id?: string | null
+          plan_id: string
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Update: {
+          ai_generated?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          area?: string
+          center_id?: string
+          created_at?: string
+          criterion?: string | null
+          deadline?: string | null
+          description?: string
+          id?: string
+          indicator?: string | null
+          parent_objective_id?: string | null
+          plan_id?: string
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_objectives_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_objectives_parent_objective_id_fkey"
+            columns: ["parent_objective_id"]
+            isOneToOne: false
+            referencedRelation: "plan_objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_objectives_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "plans"
@@ -362,6 +518,69 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          ai_generated: boolean
+          approved_at: string | null
+          approved_by: string | null
+          center_id: string
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          period_end: string
+          period_start: string
+          person_id: string
+          stats: Json
+          status: Database["public"]["Enums"]["item_status"]
+        }
+        Insert: {
+          ai_generated?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          center_id: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end: string
+          period_start: string
+          person_id: string
+          stats?: Json
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Update: {
+          ai_generated?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          center_id?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end?: string
+          period_start?: string
+          person_id?: string
+          stats?: Json
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           center_id: string
@@ -397,6 +616,7 @@ export type Database = {
     }
     Functions: {
       anonymize_person: { Args: { _person_id: string }; Returns: undefined }
+      approve_item: { Args: { _id: string; _kind: string }; Returns: undefined }
       assign_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -430,7 +650,13 @@ export type Database = {
     Enums: {
       app_role: "admin" | "educador" | "profesional" | "familia"
       consent_status: "pendiente" | "otorgado" | "retirado"
+      item_status: "borrador" | "aprobado"
       plan_level: "anual" | "mensual" | "semanal" | "diaria"
+      result_kind:
+        | "lograda"
+        | "lograda_con_apoyo"
+        | "no_lograda"
+        | "no_realizada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -560,7 +786,14 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "educador", "profesional", "familia"],
       consent_status: ["pendiente", "otorgado", "retirado"],
+      item_status: ["borrador", "aprobado"],
       plan_level: ["anual", "mensual", "semanal", "diaria"],
+      result_kind: [
+        "lograda",
+        "lograda_con_apoyo",
+        "no_lograda",
+        "no_realizada",
+      ],
     },
   },
 } as const
