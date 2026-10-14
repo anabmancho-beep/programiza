@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791992940843,
+      "tag": "0000_programiza_base",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791992979461,
+      "tag": "0001_seed_demo_fn",
+      "breakpoints": true
+    }
+  ]
+}
