@@ -420,6 +420,7 @@ export type Database = {
       }
       is_staff: { Args: never; Returns: boolean }
       join_center: { Args: { _code: string }; Returns: string }
+      load_demo_data: { Args: never; Returns: string }
       log_access: {
         Args: { _action: string; _person_id: string }
         Returns: undefined
