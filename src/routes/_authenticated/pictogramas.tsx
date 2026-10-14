@@ -47,7 +47,8 @@ function Pictos() {
       if (error) { await supabase.storage.from(PICTO_BUCKET).remove([path]); throw error; }
       toast.success("Pictograma añadido");
       setName(""); setFile(null); setLicense(false);
-      (document.getElementById("pf") as HTMLInputElement | null)?.value && ((document.getElementById("pf") as HTMLInputElement).value = "");
+      const input = document.getElementById("pf") as HTMLInputElement | null;
+      if (input) input.value = "";
       qc.invalidateQueries({ queryKey: ["pictograms"] });
     } catch (err) { toast.error(errMsg(err)); } finally { setBusy(false); }
   }

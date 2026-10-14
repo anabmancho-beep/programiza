@@ -17,6 +17,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedBancoRouteImport } from './routes/_authenticated/banco'
 import { Route as AuthenticatedCentroRouteImport } from './routes/_authenticated/centro'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
+import { Route as AuthenticatedPictogramasRouteImport } from './routes/_authenticated/pictogramas'
 import { Route as AuthenticatedPersonasIndexRouteImport } from './routes/_authenticated/personas.index'
 import { Route as AuthenticatedPersonasIdRouteImport } from './routes/_authenticated/personas.$id'
 import { Route as AuthenticatedProgramacionesIndexRouteImport } from './routes/_authenticated/programaciones.index'
@@ -61,6 +62,12 @@ const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   path: '/inicio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPictogramasRoute =
+  AuthenticatedPictogramasRouteImport.update({
+    id: '/pictogramas',
+    path: '/pictogramas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPersonasIndexRoute =
   AuthenticatedPersonasIndexRouteImport.update({
     id: '/personas/',
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/pictogramas': typeof AuthenticatedPictogramasRoute
   '/personas/$id': typeof AuthenticatedPersonasIdRoute
   '/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/personas/': typeof AuthenticatedPersonasIndexRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/pictogramas': typeof AuthenticatedPictogramasRoute
   '/personas/$id': typeof AuthenticatedPersonasIdRoute
   '/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/personas': typeof AuthenticatedPersonasIndexRoute
@@ -121,6 +130,7 @@ export interface FileRoutesById {
   '/_authenticated/banco': typeof AuthenticatedBancoRoute
   '/_authenticated/centro': typeof AuthenticatedCentroRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
+  '/_authenticated/pictogramas': typeof AuthenticatedPictogramasRoute
   '/_authenticated/personas/$id': typeof AuthenticatedPersonasIdRoute
   '/_authenticated/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/_authenticated/personas/': typeof AuthenticatedPersonasIndexRoute
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/banco'
     | '/centro'
     | '/inicio'
+    | '/pictogramas'
     | '/personas/$id'
     | '/programaciones/$id'
     | '/personas/'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/banco'
     | '/centro'
     | '/inicio'
+    | '/pictogramas'
     | '/personas/$id'
     | '/programaciones/$id'
     | '/personas'
@@ -163,6 +175,7 @@ export interface FileRouteTypes {
     | '/_authenticated/banco'
     | '/_authenticated/centro'
     | '/_authenticated/inicio'
+    | '/_authenticated/pictogramas'
     | '/_authenticated/personas/$id'
     | '/_authenticated/programaciones/$id'
     | '/_authenticated/personas/'
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInicioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pictogramas': {
+      id: '/_authenticated/pictogramas'
+      path: '/pictogramas'
+      fullPath: '/pictogramas'
+      preLoaderRoute: typeof AuthenticatedPictogramasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/personas/': {
       id: '/_authenticated/personas/'
       path: '/personas'
@@ -270,6 +290,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBancoRoute: typeof AuthenticatedBancoRoute
   AuthenticatedCentroRoute: typeof AuthenticatedCentroRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
+  AuthenticatedPictogramasRoute: typeof AuthenticatedPictogramasRoute
   AuthenticatedPersonasIdRoute: typeof AuthenticatedPersonasIdRoute
   AuthenticatedProgramacionesIdRoute: typeof AuthenticatedProgramacionesIdRoute
   AuthenticatedPersonasIndexRoute: typeof AuthenticatedPersonasIndexRoute
@@ -280,6 +301,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBancoRoute: AuthenticatedBancoRoute,
   AuthenticatedCentroRoute: AuthenticatedCentroRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
+  AuthenticatedPictogramasRoute: AuthenticatedPictogramasRoute,
   AuthenticatedPersonasIdRoute: AuthenticatedPersonasIdRoute,
   AuthenticatedProgramacionesIdRoute: AuthenticatedProgramacionesIdRoute,
   AuthenticatedPersonasIndexRoute: AuthenticatedPersonasIndexRoute,
