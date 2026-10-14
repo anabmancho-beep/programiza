@@ -46,9 +46,10 @@ function Privacy() {
         <h2 className="text-xl font-semibold">Uso de inteligencia artificial</h2>
         <p>Las sugerencias de programación y la redacción de informes usan Lovable AI. La selección de datos se hace en el servidor, nunca en el navegador.</p>
         <ul className="list-disc space-y-1 pl-6">
-          <li><strong>Se envía:</strong> tipo de discapacidad o trastorno, rango de edad, niveles de autonomía por área y nivel de la programación; para informes, solo recuentos de resultados por área, objetivo aprobado y mes.</li>
-          <li><strong>No se envía nunca:</strong> seudónimo o código, nombre del centro, diagnóstico, textos libres (apoyos, comunicación, gustos, sensibilidades, rutinas, observaciones), nombres de usuarios ni fechas de nacimiento.</li>
-          <li>Todo lo generado queda como borrador «Generado con IA» hasta que una persona del equipo lo revisa y aprueba; se guarda quién y cuándo.</li>
+          <li><strong>Se envía:</strong> tipo de discapacidad o trastorno, rango de edad, niveles de autonomía por área y nivel de la programación; para informes, solo recuentos de resultados por área, por mes y por objetivo, donde cada objetivo aparece con una etiqueta genérica («Objetivo 1», «Objetivo 2»…) y su área.</li>
+          <li><strong>No se envía nunca:</strong> seudónimo o código, nombre del centro, diagnóstico, descripciones de los objetivos, textos libres (apoyos, comunicación, gustos, sensibilidades, rutinas, observaciones), nombres de usuarios ni fechas de nacimiento. El texto de cada objetivo se añade al informe en el servidor, después de recibir la respuesta de la IA.</li>
+          <li>Solo se generan sugerencias e informes de personas con consentimiento otorgado.</li>
+          <li>Todo lo generado queda como borrador «Generado con IA» hasta que una persona del equipo lo revisa y aprueba; se guarda quién y cuándo. Si se edita el texto de un informe aprobado, vuelve a borrador y se borra la aprobación.</li>
           <li>La IA no diagnostica ni recomienda tratamientos; solo propone actividades educativas.</li>
         </ul>
       </section>
