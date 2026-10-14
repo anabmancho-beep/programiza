@@ -19,7 +19,7 @@ export function Onboarding({ onSignOut }: { onSignOut: () => void }) {
     setBusy(kind);
     const { error } = await fn();
     setBusy(null);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success(ok);
     qc.invalidateQueries();
   }
@@ -33,7 +33,7 @@ export function Onboarding({ onSignOut }: { onSignOut: () => void }) {
           <Card className="shadow-soft">
             <CardHeader><CardTitle>Crear un centro</CardTitle></CardHeader>
             <CardContent>
-              <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); if (name.trim().length < 2) return toast.error("Escribe el nombre del centro"); run("create", async () => await supabase.rpc("create_center", { _name: name.trim() }), "Centro creado"); }}>
+              <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); if (name.trim().length < 2) { toast.error("Escribe el nombre del centro"); return; } run("create", async () => await supabase.rpc("create_center", { _name: name.trim() }), "Centro creado"); }}>
                 <Label htmlFor="cname">Nombre del centro</Label>
                 <Input id="cname" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} required />
                 <Button type="submit" disabled={!!busy} className="w-full">{busy === "create" ? "Creando…" : "Crear centro"}</Button>
@@ -43,7 +43,7 @@ export function Onboarding({ onSignOut }: { onSignOut: () => void }) {
           <Card className="shadow-soft">
             <CardHeader><CardTitle>Unirme a un centro</CardTitle></CardHeader>
             <CardContent>
-              <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); if (code.trim().length < 4) return toast.error("Introduce el código"); run("join", async () => await supabase.rpc("join_center", { _code: code.trim() }), "Te has unido al centro"); }}>
+              <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); if (code.trim().length < 4) { toast.error("Introduce el código"); return; } run("join", async () => await supabase.rpc("join_center", { _code: code.trim() }), "Te has unido al centro"); }}>
                 <Label htmlFor="ccode">Código del centro</Label>
                 <Input id="ccode" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} maxLength={8} required />
                 <Button type="submit" variant="secondary" disabled={!!busy} className="w-full">{busy === "join" ? "Uniendo…" : "Unirme"}</Button>
