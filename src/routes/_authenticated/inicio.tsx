@@ -31,6 +31,17 @@ function Inicio() {
     },
   });
 
+  const isPro = me.data?.role === "admin" || me.data?.role === "profesional";
+  const apts = useQuery({
+    queryKey: ["appointments", "upcoming"],
+    enabled: isPro,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("upcoming_appointments", { _days: 7 });
+      if (error) throw error;
+      return data as unknown as { id: string; person_id: string; code: string; scheduled_at: string; specialty: string; place: string | null }[];
+    },
+  });
+
   async function demo() {
     setBusy(true);
     const { error } = await supabase.rpc("load_demo_data");
@@ -45,6 +56,21 @@ function Inicio() {
       <PageHeader title={`Hola${me.data?.displayName ? ", " + me.data.displayName : ""}`} subtitle={me.data?.center?.name}
         actions={me.data?.role === "admin" && <Button variant="outline" onClick={demo} disabled={busy}>{busy ? "Cargando…" : "Cargar datos de ejemplo"}</Button>} />
       <Notice title="Prototipo con datos ficticios">No introduzcas nombres reales ni datos identificativos. Usa seudónimos o códigos como «P-014».</Notice>
+      <div className="mt-6 grid gap-3 sm:hidden"><Link to="/hoy" className="rounded-xl bg-primary p-5 text-center text-xl font-bold text-primary-foreground">Ir a «Hoy»</Link></div>
+      {isPro && (
+        <section aria-labelledby="rec" className="mt-6 rounded-xl border bg-card p-5">
+          <h2 id="rec" className="mb-2 text-xl font-semibold">Recordatorios de citas (próximos 7 días)</h2>
+          {apts.isLoading ? <Loading /> : apts.error ? <ErrorBox error={apts.error} /> : apts.data!.length === 0 ? <p className="text-muted-foreground">No hay citas próximas.</p> : (
+            <ul className="space-y-2">{apts.data!.map((a) => (
+              <li key={a.id}><Link to="/personas/$id" params={{ id: a.person_id }} className="flex flex-wrap justify-between gap-2 rounded-lg border p-3 hover:border-primary">
+                <span><strong>{a.code}</strong> · {a.specialty}{a.place ? ` · ${a.place}` : ""}</span>
+                <span>{new Date(a.scheduled_at).toLocaleString("es-ES", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+              </Link></li>
+            ))}</ul>
+          )}
+          <p className="mt-2 text-sm text-muted-foreground">Solo informativo. No sustituye la pauta médica.</p>
+        </section>
+      )}
       <div className="mt-6">
         {stats.isLoading ? <Loading /> : stats.error ? <ErrorBox error={stats.error} /> : (
           <div className="grid gap-4 sm:grid-cols-3">

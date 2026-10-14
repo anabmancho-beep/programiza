@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NativeSelect } from "@/components/forms";
 import { PageHeader, Loading, ErrorBox, Empty, Notice } from "@/components/states";
-import { ROLE_LABELS, errMsg } from "@/lib/constants";
+import { ROLE_LABELS, ACTION_LABELS, errMsg } from "@/lib/constants";
 
 export const Route = createFileRoute("/_authenticated/centro")({
   head: () => ({ meta: [{ title: "Centro y equipo · Programiza" }, { name: "description", content: "Gestión del equipo, roles y registro de accesos." }, { property: "og:title", content: "Centro y equipo · Programiza" }, { property: "og:description", content: "Equipo, roles y registro de accesos." }] }),
@@ -22,10 +22,11 @@ function Centro() {
   const qc = useQueryClient();
   const team = useQuery({
     queryKey: ["team"],
+    enabled: !!me.data?.center,
     queryFn: async () => {
       const [p, r] = await Promise.all([
         supabase.from("profiles").select("id, display_name"),
-        supabase.from("user_roles").select("user_id, role"),
+        supabase.from("user_roles").select("user_id, role").eq("center_id", me.data?.center?.id ?? ""),
       ]);
       if (p.error) throw p.error;
       if (r.error) throw r.error;
@@ -91,7 +92,7 @@ function Centro() {
                 <caption className="sr-only">Últimos 200 accesos a fichas</caption>
                 <thead className="bg-muted"><tr><th className="p-3">Fecha</th><th className="p-3">Usuario</th><th className="p-3">Ficha</th><th className="p-3">Acción</th></tr></thead>
                 <tbody>{logs.data!.map((l) => (
-                  <tr key={l.id} className="border-t"><td className="p-3">{new Date(l.created_at).toLocaleString("es-ES")}</td><td className="p-3">{nameOf(l.user_id)}</td><td className="p-3">{l.person_code ?? "(anonimizada)"}</td><td className="p-3 capitalize">{l.action}</td></tr>
+                  <tr key={l.id} className="border-t"><td className="p-3">{new Date(l.created_at).toLocaleString("es-ES")}</td><td className="p-3">{nameOf(l.user_id)}</td><td className="p-3">{l.person_code ?? "(anonimizada)"}</td><td className="p-3">{ACTION_LABELS[l.action] ?? l.action}</td></tr>
                 ))}</tbody>
               </table>
             </div>

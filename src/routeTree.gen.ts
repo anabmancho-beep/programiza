@@ -16,7 +16,10 @@ import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedBancoRouteImport } from './routes/_authenticated/banco'
 import { Route as AuthenticatedCentroRouteImport } from './routes/_authenticated/centro'
+import { Route as AuthenticatedHoyRouteImport } from './routes/_authenticated/hoy'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
+import { Route as AuthenticatedPictogramasRouteImport } from './routes/_authenticated/pictogramas'
+import { Route as InvitacionTokenRouteImport } from './routes/invitacion.$token'
 import { Route as AuthenticatedPersonasIndexRouteImport } from './routes/_authenticated/personas.index'
 import { Route as AuthenticatedPersonasIdRouteImport } from './routes/_authenticated/personas.$id'
 import { Route as AuthenticatedProgramacionesIndexRouteImport } from './routes/_authenticated/programaciones.index'
@@ -56,10 +59,26 @@ const AuthenticatedCentroRoute = AuthenticatedCentroRouteImport.update({
   path: '/centro',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHoyRoute = AuthenticatedHoyRouteImport.update({
+  id: '/hoy',
+  path: '/hoy',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   id: '/inicio',
   path: '/inicio',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPictogramasRoute =
+  AuthenticatedPictogramasRouteImport.update({
+    id: '/pictogramas',
+    path: '/pictogramas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const InvitacionTokenRoute = InvitacionTokenRouteImport.update({
+  id: '/invitacion/$token',
+  path: '/invitacion/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPersonasIndexRoute =
   AuthenticatedPersonasIndexRouteImport.update({
@@ -92,7 +111,10 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
+  '/hoy': typeof AuthenticatedHoyRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/pictogramas': typeof AuthenticatedPictogramasRoute
+  '/invitacion/$token': typeof InvitacionTokenRoute
   '/personas/$id': typeof AuthenticatedPersonasIdRoute
   '/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/personas/': typeof AuthenticatedPersonasIndexRoute
@@ -105,7 +127,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/banco': typeof AuthenticatedBancoRoute
   '/centro': typeof AuthenticatedCentroRoute
+  '/hoy': typeof AuthenticatedHoyRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/pictogramas': typeof AuthenticatedPictogramasRoute
+  '/invitacion/$token': typeof InvitacionTokenRoute
   '/personas/$id': typeof AuthenticatedPersonasIdRoute
   '/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/personas': typeof AuthenticatedPersonasIndexRoute
@@ -120,7 +145,10 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/banco': typeof AuthenticatedBancoRoute
   '/_authenticated/centro': typeof AuthenticatedCentroRoute
+  '/_authenticated/hoy': typeof AuthenticatedHoyRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
+  '/_authenticated/pictogramas': typeof AuthenticatedPictogramasRoute
+  '/invitacion/$token': typeof InvitacionTokenRoute
   '/_authenticated/personas/$id': typeof AuthenticatedPersonasIdRoute
   '/_authenticated/programaciones/$id': typeof AuthenticatedProgramacionesIdRoute
   '/_authenticated/personas/': typeof AuthenticatedPersonasIndexRoute
@@ -135,7 +163,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/banco'
     | '/centro'
+    | '/hoy'
     | '/inicio'
+    | '/pictogramas'
+    | '/invitacion/$token'
     | '/personas/$id'
     | '/programaciones/$id'
     | '/personas/'
@@ -148,7 +179,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/banco'
     | '/centro'
+    | '/hoy'
     | '/inicio'
+    | '/pictogramas'
+    | '/invitacion/$token'
     | '/personas/$id'
     | '/programaciones/$id'
     | '/personas'
@@ -162,7 +196,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/banco'
     | '/_authenticated/centro'
+    | '/_authenticated/hoy'
     | '/_authenticated/inicio'
+    | '/_authenticated/pictogramas'
+    | '/invitacion/$token'
     | '/_authenticated/personas/$id'
     | '/_authenticated/programaciones/$id'
     | '/_authenticated/personas/'
@@ -175,6 +212,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PrivacidadRoute: typeof PrivacidadRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  InvitacionTokenRoute: typeof InvitacionTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -228,12 +266,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCentroRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/hoy': {
+      id: '/_authenticated/hoy'
+      path: '/hoy'
+      fullPath: '/hoy'
+      preLoaderRoute: typeof AuthenticatedHoyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/inicio': {
       id: '/_authenticated/inicio'
       path: '/inicio'
       fullPath: '/inicio'
       preLoaderRoute: typeof AuthenticatedInicioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pictogramas': {
+      id: '/_authenticated/pictogramas'
+      path: '/pictogramas'
+      fullPath: '/pictogramas'
+      preLoaderRoute: typeof AuthenticatedPictogramasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/invitacion/$token': {
+      id: '/invitacion/$token'
+      path: '/invitacion/$token'
+      fullPath: '/invitacion/$token'
+      preLoaderRoute: typeof InvitacionTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/personas/': {
       id: '/_authenticated/personas/'
@@ -269,7 +328,9 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBancoRoute: typeof AuthenticatedBancoRoute
   AuthenticatedCentroRoute: typeof AuthenticatedCentroRoute
+  AuthenticatedHoyRoute: typeof AuthenticatedHoyRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
+  AuthenticatedPictogramasRoute: typeof AuthenticatedPictogramasRoute
   AuthenticatedPersonasIdRoute: typeof AuthenticatedPersonasIdRoute
   AuthenticatedProgramacionesIdRoute: typeof AuthenticatedProgramacionesIdRoute
   AuthenticatedPersonasIndexRoute: typeof AuthenticatedPersonasIndexRoute
@@ -279,7 +340,9 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBancoRoute: AuthenticatedBancoRoute,
   AuthenticatedCentroRoute: AuthenticatedCentroRoute,
+  AuthenticatedHoyRoute: AuthenticatedHoyRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
+  AuthenticatedPictogramasRoute: AuthenticatedPictogramasRoute,
   AuthenticatedPersonasIdRoute: AuthenticatedPersonasIdRoute,
   AuthenticatedProgramacionesIdRoute: AuthenticatedProgramacionesIdRoute,
   AuthenticatedPersonasIndexRoute: AuthenticatedPersonasIndexRoute,
@@ -295,6 +358,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PrivacidadRoute: PrivacidadRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  InvitacionTokenRoute: InvitacionTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

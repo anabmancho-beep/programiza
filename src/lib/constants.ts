@@ -83,3 +83,14 @@ export const RESULTS: { value: "lograda" | "lograda_con_apoyo" | "no_lograda" | 
   { value: "no_lograda", label: "No lograda" },
   { value: "no_realizada", label: "No realizada" },
 ];
+
+export const PENDING_INVITE_KEY = "programiza.invite";
+
+export const ACTION_LABELS: Record<string, string> = {
+  abrir: "Abrir ficha", editar: "Editar", crear: "Crear", exportar: "Exportar datos", anonimizar: "Anonimizar", eliminar: "Eliminar",
+  sugerencia_ia: "Sugerencia IA", seguimiento: "Seguimiento", informe: "Informe", exportar_pdf: "Exportar PDF", ver_evolucion: "Ver evolución",
+  lectura_facil: "Lectura fácil", invitar_familia: "Invitar a la familia", compartir_familia: "Compartir con la familia",
+  familia_ver_agenda: "Familia: ver agenda", familia_ver_informes: "Familia: ver informes",
+  ver_conductas: "Ver conductas (restringido)", conducta: "Registro de conducta", conducta_eliminar: "Eliminar registro de conducta",
+  plan_anticipacion: "Plan de anticipación", ver_salud: "Ver salud (restringido)", salud: "Editar salud", salud_eliminar: "Eliminar dato de salud",
+};

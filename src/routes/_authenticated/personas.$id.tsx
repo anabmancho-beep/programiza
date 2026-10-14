@@ -17,6 +17,9 @@ import { PageHeader, Loading, ErrorBox, Notice, Empty } from "@/components/state
 import { PlanCreateDialog } from "@/components/PlanCreateDialog";
 import { EvolutionTab } from "@/components/EvolutionTab";
 import { ReportsTab } from "@/components/ReportsTab";
+import { FamilyAccessTab } from "@/components/FamilyAccessTab";
+import { BehaviorTab } from "@/components/BehaviorTab";
+import { HealthTab } from "@/components/HealthTab";
 import { AGE_RANGES, AUTONOMY_AREAS, AUTONOMY_LEVELS, CONSENT_BADGE, LEVELS, MAIN_TYPES, errMsg, fmtDate, label } from "@/lib/constants";
 
 type Person = Database["public"]["Tables"]["persons"]["Row"];
@@ -68,6 +71,7 @@ function PersonPage() {
   const saved = q.data!;
   const granted = saved.consent_status === "otorgado";
   const isAdmin = me.data?.role === "admin";
+  const isPro = isAdmin || me.data?.role === "profesional";
   const set = <K extends keyof Person>(k: K, v: Person[K]) => setF({ ...p, [k]: v });
 
   async function save(fields: Partial<Person>, msg = "Cambios guardados") {
@@ -144,6 +148,9 @@ function PersonPage() {
           <TabsTrigger value="programaciones">Programaciones</TabsTrigger>
           <TabsTrigger value="evolucion">Evolución</TabsTrigger>
           <TabsTrigger value="informes">Informes</TabsTrigger>
+          <TabsTrigger value="familia">Familia</TabsTrigger>
+          {isPro && <TabsTrigger value="conductas">Conductas (restringido)</TabsTrigger>}
+          {isPro && <TabsTrigger value="salud">Salud (restringido)</TabsTrigger>}
           {isAdmin && <TabsTrigger value="derechos">Derechos RGPD</TabsTrigger>}
         </TabsList>
 
@@ -217,6 +224,9 @@ function PersonPage() {
 
         <TabsContent value="evolucion"><EvolutionTab personId={id} /></TabsContent>
         <TabsContent value="informes"><ReportsTab personId={id} code={saved.code} /></TabsContent>
+        <TabsContent value="familia"><FamilyAccessTab personId={id} granted={granted} /></TabsContent>
+        {isPro && <TabsContent value="conductas"><BehaviorTab personId={id} /></TabsContent>}
+        {isPro && <TabsContent value="salud"><HealthTab personId={id} /></TabsContent>}
         {isAdmin && (
           <TabsContent value="derechos">
             <div className="mt-4 space-y-4 rounded-xl border bg-card p-6">

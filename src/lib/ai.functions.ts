@@ -185,3 +185,56 @@ Termina con propuestas educativas generales para el siguiente periodo, sin recom
     await supabase.rpc("log_access", { _person_id: person.id, _action: "informe" });
     return { ok: true as const, id: rep.id };
   });
+
+/** Removes anything that could identify a person before text reaches the AI. */
+function scrub(text: string, codes: string[]): string {
+  let t = text;
+  for (const c of codes.filter(Boolean).sort((a, b) => b.length - a.length)) {
+    t = t.replace(new RegExp(c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "la persona");
+  }
+  return t
+    .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, "[correo]")
+    .replace(/\b[XYZ]?\d{7,8}[A-Z]\b/gi, "[documento]")
+    .replace(/(\+?\d[\d\s.-]{7,}\d)/g, "[teléfono]")
+    .replace(/\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b/g, "[fecha]")
+    .replace(/\b[A-Z]{1,5}-\d{2,6}\b/g, "la persona");
+}
+
+export const easyRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.union([
+    z.object({ planId: z.string().uuid() }),
+    z.object({ text: z.string().min(3).max(4000) }),
+  ]).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { aiObject, AiError } = await import("./ai.server");
+    const { data: persons } = await supabase.from("persons").select("code");
+    const codes = (persons ?? []).map((p) => p.code);
+    let source: string; let personId: string | null = null;
+    if ("planId" in data) {
+      const { data: plan } = await supabase.from("plans").select("id, level, person_id").eq("id", data.planId).maybeSingle();
+      if (!plan) return { ok: false as const, error: "Programación no encontrada" };
+      personId = plan.person_id;
+      const { data: acts } = await supabase.from("plan_activities").select("title, day_of_week, time_slot, position, steps")
+        .eq("plan_id", plan.id).eq("status", "aprobado").order("day_of_week", { nullsFirst: true }).order("time_slot", { nullsFirst: true }).order("position");
+      if (!acts?.length) return { ok: false as const, error: "No hay actividades aprobadas en esta agenda." };
+      const DAYS = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+      // Only titles, day, time and steps — never adaptations, materials, codes or notes.
+      source = acts.map((a) => `${a.day_of_week ? DAYS[a.day_of_week] + " " : ""}${a.time_slot ? a.time_slot.slice(0, 5) + " " : ""}${a.title}${a.steps.length ? ": " + a.steps.join("; ") : ""}`).join("\n");
+    } else {
+      source = data.text;
+    }
+    const clean = scrub(source, codes).slice(0, 4000);
+    const instructions = `${SAFETY}
+Tarea: reescribe el texto en LECTURA FÁCIL (pautas de lectura fácil en español): frases cortas, una idea por frase, palabras sencillas y cotidianas, voz activa, sin abreviaturas ni porcentajes complejos.
+Mantén el orden y el significado. No añadas información nueva. Si es una agenda, usa una línea por actividad empezando por la hora o el día si los hay.
+No incluyas nombres, códigos ni datos personales. Si ves marcadores como [correo] o [teléfono], omítelos.`;
+    try {
+      const out = await aiObject(z.object({ texto: z.string() }), instructions, clean);
+      if (personId) await supabase.rpc("log_access", { _person_id: personId, _action: "lectura_facil" });
+      return { ok: true as const, text: scrub(out.texto.trim(), codes) };
+    } catch (e) {
+      return { ok: false as const, error: e instanceof AiError ? e.message : "Error de IA" };
+    }
+  });

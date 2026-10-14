@@ -32,6 +32,9 @@ function Privacy() {
           <li>Datos de salud estrictamente necesarios para programar (tipo de discapacidad, diagnóstico breve, perfil funcional).</li>
           <li>Registro de consentimiento: quién lo otorga, fecha, finalidad y estado.</li>
           <li>Datos de las cuentas del equipo (correo y nombre) y registro de accesos a las fichas.</li>
+          <li>Registro de conductas (antecedente, conducta, consecuencia) y plan de anticipación: solo los ven y editan profesionales y la administración.</li>
+          <li>Medicación prescrita y citas médicas, solo informativas y copiadas de la pauta del profesional sanitario: solo profesionales y administración. La aplicación no calcula dosis ni da recomendaciones sobre medicación.</li>
+          <li>Pictogramas e imágenes subidos por el centro, que deben ser propios o con licencia de uso y no mostrar a personas reconocibles.</li>
         </ul>
       </section>
       <section className="space-y-2">
@@ -43,6 +46,10 @@ function Privacy() {
         <p>Los datos de cada centro están aislados y solo los ve su equipo. Los roles los asigna exclusivamente la administración del centro. Cada apertura o edición de una ficha queda registrada. No se envían datos identificativos a servicios externos.</p>
       </section>
       <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Acceso de familias</h2>
+        <p>El centro puede invitar a un familiar o tutor legal con un enlace personal, válido 14 días, que solo funciona con el correo invitado. Solo se activa con el consentimiento otorgado; si se retira, el acceso se corta al momento. La familia solo ve, en modo lectura, la agenda semanal y los informes aprobados que el equipo comparta. Nunca ve adaptaciones, observaciones, conductas, salud ni a otras personas. Cada consulta queda registrada.</p>
+      </section>
+      <section className="space-y-2">
         <h2 className="text-xl font-semibold">Uso de inteligencia artificial</h2>
         <p>Las sugerencias de programación y la redacción de informes usan Lovable AI. La selección de datos se hace en el servidor, nunca en el navegador.</p>
         <ul className="list-disc space-y-1 pl-6">
@@ -50,6 +57,7 @@ function Privacy() {
           <li><strong>No se envía nunca:</strong> seudónimo o código, nombre del centro, diagnóstico, descripciones de los objetivos, textos libres (apoyos, comunicación, gustos, sensibilidades, rutinas, observaciones), nombres de usuarios ni fechas de nacimiento. El texto de cada objetivo se añade al informe en el servidor, después de recibir la respuesta de la IA.</li>
           <li>Solo se generan sugerencias e informes de personas con consentimiento otorgado.</li>
           <li>Todo lo generado queda como borrador «Generado con IA» hasta que una persona del equipo lo revisa y aprueba; se guarda quién y cuándo. Si se edita el texto de un informe aprobado, vuelve a borrador y se borra la aprobación.</li>
+          <li><strong>Lectura fácil:</strong> para agendas se envían solo títulos, días, horas y pasos de actividades aprobadas. Para textos, el servidor quita antes códigos, correos, teléfonos, DNI y fechas. Nunca se envían conductas ni datos de salud.</li>
           <li>La IA no diagnostica ni recomienda tratamientos; solo propone actividades educativas.</li>
         </ul>
       </section>

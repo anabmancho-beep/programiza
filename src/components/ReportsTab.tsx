@@ -2,7 +2,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, FileDown } from "lucide-react";
+import { Check, FileDown, BookOpen } from "lucide-react";
+import { EasyReadDialog } from "@/components/EasyReadDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { draftReport } from "@/lib/ai.functions";
 import { reportPdf } from "@/lib/pdf";
@@ -21,6 +22,7 @@ export function ReportsTab({ personId, code }: { personId: string; code: string 
   const [from, setFrom] = useState(new Date(today.getFullYear(), today.getMonth() - 1, 1).toISOString().slice(0, 10));
   const [to, setTo] = useState(today.toISOString().slice(0, 10));
   const [busy, setBusy] = useState(false);
+  const [easy, setEasy] = useState<string | null>(null);
   const [editing, setEditing] = useState<Record<string, string>>({});
   const q = useQuery({
     queryKey: ["reports", personId],
@@ -59,6 +61,13 @@ export function ReportsTab({ personId, code }: { personId: string; code: string 
     toast.success("Informe aprobado");
     qc.invalidateQueries({ queryKey: ["reports", personId] });
   }
+  async function share(id: string, v: boolean) {
+    const { error } = await supabase.from("reports").update({ shared_with_family: v }).eq("id", id);
+    if (error) { toast.error(errMsg(error)); return; }
+    await supabase.rpc("log_access", { _person_id: personId, _action: "compartir_familia" });
+    toast.success(v ? "La familia podrá ver este informe" : "Informe retirado de la vista de la familia");
+    qc.invalidateQueries({ queryKey: ["reports", personId] });
+  }
   async function remove(id: string) {
     const { error } = await supabase.from("reports").delete().eq("id", id);
     if (error) { toast.error(errMsg(error)); return; }
@@ -83,6 +92,7 @@ export function ReportsTab({ personId, code }: { personId: string; code: string 
                 reportPdf(code, `${fmtDate(r.period_start)} – ${fmtDate(r.period_end)}`, r.content, r.stats as never, `Aprobado por ${who(r.approved_by)} el ${new Date(r.approved_at!).toLocaleDateString("es-ES")}`);
                 await supabase.rpc("log_access", { _person_id: personId, _action: "exportar_pdf" });
               }}><FileDown className="mr-1 h-4 w-4" />Descargar PDF</Button>}
+              {r.status === "aprobado" && <Button size="sm" variant="outline" onClick={() => setEasy(r.content)}><BookOpen className="mr-1 h-4 w-4" />Lectura fácil</Button>}
               {editing[r.id] === undefined && <Button size="sm" variant="ghost" onClick={() => setEditing({ ...editing, [r.id]: r.content })}>Editar</Button>}
               <Button size="sm" variant="ghost" onClick={() => remove(r.id)}>{r.status === "borrador" ? "Descartar" : "Eliminar"}</Button>
             </div>
@@ -92,9 +102,14 @@ export function ReportsTab({ personId, code }: { personId: string; code: string 
             <div className="space-y-2"><Textarea rows={10} value={editing[r.id]} onChange={(e) => setEditing({ ...editing, [r.id]: e.target.value })} aria-label="Texto del informe" />
               <Button size="sm" onClick={() => saveText(r.id)}>Guardar texto</Button></div>
           ) : <div className="whitespace-pre-line">{r.content}</div>}
+          <label className="mt-3 flex items-center gap-2 text-sm">
+            <input type="checkbox" className="h-5 w-5" checked={r.shared_with_family} onChange={(e) => share(r.id, e.target.checked)} />
+            Compartir con la familia {r.status !== "aprobado" && <span className="text-muted-foreground">(solo lo verá cuando esté aprobado)</span>}
+          </label>
           {r.status === "aprobado" && <p className="mt-3 text-sm text-muted-foreground">Aprobado por {who(r.approved_by)} el {new Date(r.approved_at!).toLocaleString("es-ES")}</p>}
         </article>
       ))}
+      <EasyReadDialog open={easy !== null} onOpenChange={(o) => !o && setEasy(null)} initialText={easy ?? ""} />
     </div>
   );
 }
