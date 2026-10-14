@@ -2,7 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Pencil, Trash2, Sparkles, Check, ClipboardCheck, FileDown } from "lucide-react";
+import { Pencil, Trash2, Sparkles, Check, ClipboardCheck, FileDown, BookOpen, Images } from "lucide-react";
+import { EasyReadDialog } from "@/components/EasyReadDialog";
+import { usePictograms, usePictoUrls } from "@/lib/pictos";
 import { useServerFn } from "@tanstack/react-start";
 import { suggestPlan } from "@/lib/ai.functions";
 import { dailyAgendaPdf, weeklyAgendaPdf } from "@/lib/pdf";
@@ -49,6 +51,10 @@ function PlanPage() {
   const [aiNote, setAiNote] = useState<{ clinical: string | null; rhythm: string } | null>(null);
   const [resultFor, setResultFor] = useState<Activity | null>(null);
   const suggest = useServerFn(suggestPlan);
+  const [easyOpen, setEasyOpen] = useState(false);
+  const [visual, setVisual] = useState(false);
+  const pictos = usePictograms();
+  const pictoPath = (pid: string | null) => pictos.data?.find((p) => p.id === pid)?.storage_path ?? null;
 
   const q = useQuery({
     queryKey: ["plan", id],
@@ -69,6 +75,7 @@ function PlanPage() {
     },
   });
 
+  const pictoUrls = usePictoUrls((q.data?.acts ?? []).map((a) => pictoPath(a.pictogram_id)));
   const parentLevel = q.data ? PARENT_LEVEL[q.data.plan.level] : undefined;
   const targets = useQuery({
     queryKey: ["plans", "targets", parentLevel],
@@ -217,6 +224,8 @@ function PlanPage() {
         actions={<>
           {plan.person_id && <Button onClick={() => { setAiNote(null); setAiOpen(true); }}><Sparkles className="mr-2 h-4 w-4" />Sugerir con IA</Button>}
           {(plan.level === "semanal" || plan.level === "diaria") && <Button variant="outline" onClick={pdf}><FileDown className="mr-2 h-4 w-4" />Descargar PDF</Button>}
+          {(plan.level === "semanal" || plan.level === "diaria") && <Button variant="outline" onClick={() => setEasyOpen(true)}><BookOpen className="mr-2 h-4 w-4" />Pasar a lectura fácil</Button>}
+          {plan.level === "diaria" && <Button variant="outline" aria-pressed={visual} onClick={() => setVisual(!visual)}><Images className="mr-2 h-4 w-4" />{visual ? "Vista de lista" : "Ver con pictogramas"}</Button>}
           {plan.level === "semanal" && !plan.is_template && <Button variant="secondary" onClick={() => setDupOpen(true)}>Duplicar semana</Button>}
           {plan.is_template ? (parentLevel && <Button onClick={() => setApplyOpen(true)}>Aplicar a una persona</Button>)
             : <Button variant="outline" onClick={() => copyPlan({ asTemplate: true })}>Guardar como plantilla</Button>}
@@ -247,7 +256,21 @@ function PlanPage() {
           </div>
         </div>
         {acts.length === 0 ? <Empty title="Sin actividades"><p>Añade una nueva o cópiala del banco de actividades.</p></Empty>
-          : plan.level === "semanal" ? (
+          : plan.level === "diaria" && visual ? (
+            <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Agenda visual del día">
+              {[...approvedActs].sort((a, b) => a.position - b.position).map((a, i) => {
+                const u = pictoUrls.data?.[pictoPath(a.pictogram_id) ?? ""];
+                return (
+                  <li key={a.id} className="flex flex-col items-center rounded-2xl border-2 bg-card p-5 text-center">
+                    <span className="text-lg font-bold text-primary">{i + 1}{a.time_slot ? ` · ${a.time_slot.slice(0, 5)}` : ""}</span>
+                    {u ? <img src={u} alt="" className="my-3 h-40 w-40 object-contain" /> : <div className="my-3 flex h-40 w-40 items-center justify-center rounded-xl bg-muted text-sm text-muted-foreground">Sin pictograma</div>}
+                    <p className="text-2xl font-bold">{a.title}</p>
+                  </li>
+                );
+              })}
+              {approvedActs.length === 0 && <p className="text-muted-foreground">No hay actividades aprobadas.</p>}
+            </ol>
+          ) : plan.level === "semanal" ? (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {DAYS.map((d, di) => {
                 const list = acts.filter((a) => a.day_of_week === di + 1);
@@ -293,6 +316,7 @@ function PlanPage() {
             <Button onClick={() => { const t = targets.data?.find((x) => x.id === target); if (!t) { toast.error("Elige una programación"); return; } copyPlan({ asTemplate: false, parentId: t.id, personId: t.person_id }); }}>Aplicar</Button></DialogFooter>
         </DialogContent>
       </Dialog>
+      <EasyReadDialog open={easyOpen} onOpenChange={setEasyOpen} planId={plan.id} />
       <ResultDialog activity={resultFor} onClose={() => setResultFor(null)} />
       <Dialog open={aiOpen} onOpenChange={setAiOpen}>
         <DialogContent>
