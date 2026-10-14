@@ -32,8 +32,8 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!/^\S+@\S+\.\S+$/.test(email)) return toast.error("Introduce un correo válido");
-    if (mode !== "forgot" && password.length < 8) return toast.error("La contraseña debe tener al menos 8 caracteres");
+    if (!/^\S+@\S+\.\S+$/.test(email)) { toast.error("Introduce un correo válido"); return; }
+    if (mode !== "forgot" && password.length < 8) { toast.error("La contraseña debe tener al menos 8 caracteres"); return; }
     setBusy(true);
     try {
       if (mode === "login") {
@@ -61,7 +61,7 @@ function AuthPage() {
 
   async function google() {
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) return toast.error(errMsg(r.error));
+    if (r.error) { toast.error(errMsg(r.error)); return; }
     if (r.redirected) return;
     navigate({ to: "/inicio" });
   }
