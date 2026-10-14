@@ -61,6 +61,7 @@ export type Database = {
           duration_min: number | null
           id: string
           materials: string | null
+          pictogram_id: string | null
           steps: string[]
           support_level: string | null
           title: string
@@ -73,6 +74,7 @@ export type Database = {
           duration_min?: number | null
           id?: string
           materials?: string | null
+          pictogram_id?: string | null
           steps?: string[]
           support_level?: string | null
           title: string
@@ -85,6 +87,7 @@ export type Database = {
           duration_min?: number | null
           id?: string
           materials?: string | null
+          pictogram_id?: string | null
           steps?: string[]
           support_level?: string | null
           title?: string
@@ -95,6 +98,13 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_bank_pictogram_id_fkey"
+            columns: ["pictogram_id"]
+            isOneToOne: false
+            referencedRelation: "pictograms"
             referencedColumns: ["id"]
           },
         ]
@@ -160,6 +170,111 @@ export type Database = {
           },
         ]
       }
+      anticipation_plans: {
+        Row: {
+          center_id: string
+          early_signs: string | null
+          id: string
+          person_id: string
+          updated_at: string
+          updated_by: string | null
+          what_helps: string | null
+          what_to_avoid: string | null
+        }
+        Insert: {
+          center_id: string
+          early_signs?: string | null
+          id?: string
+          person_id: string
+          updated_at?: string
+          updated_by?: string | null
+          what_helps?: string | null
+          what_to_avoid?: string | null
+        }
+        Update: {
+          center_id?: string
+          early_signs?: string | null
+          id?: string
+          person_id?: string
+          updated_at?: string
+          updated_by?: string | null
+          what_helps?: string | null
+          what_to_avoid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anticipation_plans_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anticipation_plans_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: true
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      behavior_records: {
+        Row: {
+          antecedent: string
+          behavior: string
+          center_id: string
+          consequence: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          occurred_at: string
+          person_id: string
+          updated_at: string
+        }
+        Insert: {
+          antecedent: string
+          behavior: string
+          center_id: string
+          consequence: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          occurred_at: string
+          person_id: string
+          updated_at?: string
+        }
+        Update: {
+          antecedent?: string
+          behavior?: string
+          center_id?: string
+          consequence?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          occurred_at?: string
+          person_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "behavior_records_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "behavior_records_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       centers: {
         Row: {
           created_at: string
@@ -183,6 +298,210 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      family_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          center_id: string
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          person_id: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          person_id: string
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          person_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_invites_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_invites_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_links: {
+        Row: {
+          center_id: string
+          created_at: string
+          id: string
+          person_id: string
+          user_id: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          id?: string
+          person_id: string
+          user_id: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          id?: string
+          person_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_links_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_links_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_appointments: {
+        Row: {
+          center_id: string
+          created_at: string
+          created_by: string | null
+          done: boolean
+          id: string
+          notes: string | null
+          person_id: string
+          place: string | null
+          scheduled_at: string
+          specialty: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          done?: boolean
+          id?: string
+          notes?: string | null
+          person_id: string
+          place?: string | null
+          scheduled_at: string
+          specialty: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          done?: boolean
+          id?: string
+          notes?: string | null
+          person_id?: string
+          place?: string | null
+          scheduled_at?: string
+          specialty?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_appointments_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medical_appointments_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medications: {
+        Row: {
+          center_id: string
+          created_at: string
+          created_by: string | null
+          end_date: string | null
+          id: string
+          name: string
+          notes: string | null
+          person_id: string
+          prescribed_regimen: string
+          prescriber: string | null
+          start_date: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          person_id: string
+          prescribed_regimen: string
+          prescriber?: string | null
+          start_date?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          person_id?: string
+          prescribed_regimen?: string
+          prescriber?: string | null
+          start_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medications_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medications_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       persons: {
         Row: {
@@ -261,6 +580,44 @@ export type Database = {
           },
         ]
       }
+      pictograms: {
+        Row: {
+          center_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          license_confirmed: boolean
+          name: string
+          storage_path: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          license_confirmed?: boolean
+          name: string
+          storage_path: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          license_confirmed?: boolean
+          name?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pictograms_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan_activities: {
         Row: {
           adaptations: string | null
@@ -275,6 +632,7 @@ export type Database = {
           id: string
           materials: string | null
           objective_id: string | null
+          pictogram_id: string | null
           plan_id: string
           position: number
           status: Database["public"]["Enums"]["item_status"]
@@ -296,6 +654,7 @@ export type Database = {
           id?: string
           materials?: string | null
           objective_id?: string | null
+          pictogram_id?: string | null
           plan_id: string
           position?: number
           status?: Database["public"]["Enums"]["item_status"]
@@ -317,6 +676,7 @@ export type Database = {
           id?: string
           materials?: string | null
           objective_id?: string | null
+          pictogram_id?: string | null
           plan_id?: string
           position?: number
           status?: Database["public"]["Enums"]["item_status"]
@@ -338,6 +698,13 @@ export type Database = {
             columns: ["objective_id"]
             isOneToOne: false
             referencedRelation: "plan_objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_activities_pictogram_id_fkey"
+            columns: ["pictogram_id"]
+            isOneToOne: false
+            referencedRelation: "pictograms"
             referencedColumns: ["id"]
           },
           {
@@ -531,6 +898,7 @@ export type Database = {
           period_end: string
           period_start: string
           person_id: string
+          shared_with_family: boolean
           stats: Json
           status: Database["public"]["Enums"]["item_status"]
         }
@@ -546,6 +914,7 @@ export type Database = {
           period_end: string
           period_start: string
           person_id: string
+          shared_with_family?: boolean
           stats?: Json
           status?: Database["public"]["Enums"]["item_status"]
         }
@@ -561,6 +930,7 @@ export type Database = {
           period_end?: string
           period_start?: string
           person_id?: string
+          shared_with_family?: boolean
           stats?: Json
           status?: Database["public"]["Enums"]["item_status"]
         }
@@ -615,6 +985,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _family_can: { Args: { _person_id: string }; Returns: boolean }
+      _log: {
+        Args: { _action: string; _person_id: string }
+        Returns: undefined
+      }
+      _pro_person: { Args: { _person_id: string }; Returns: string }
+      accept_family_invite: { Args: { _token: string }; Returns: undefined }
       anonymize_person: { Args: { _person_id: string }; Returns: undefined }
       approve_item: { Args: { _id: string; _kind: string }; Returns: undefined }
       assign_role: {
@@ -625,12 +1002,28 @@ export type Database = {
         Returns: undefined
       }
       create_center: { Args: { _name: string }; Returns: string }
+      create_family_invite: {
+        Args: { _email: string; _person_id: string }
+        Returns: string
+      }
       current_center_id: { Args: never; Returns: string }
+      delete_sensitive: {
+        Args: { _id: string; _kind: string; _person_id: string }
+        Returns: undefined
+      }
       duplicate_week: {
         Args: { _new_start: string; _plan_id: string }
         Returns: string
       }
       export_person: { Args: { _person_id: string }; Returns: Json }
+      family_overview: { Args: never; Returns: Json }
+      family_reports: { Args: { _person_id: string }; Returns: Json }
+      family_week: {
+        Args: { _date: string; _person_id: string }
+        Returns: Json
+      }
+      get_behavior_module: { Args: { _person_id: string }; Returns: Json }
+      get_health: { Args: { _person_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -638,6 +1031,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      invite_status: { Args: { _token: string }; Returns: string }
+      is_pro: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
       join_center: { Args: { _code: string }; Returns: string }
       load_demo_data: { Args: never; Returns: string }
@@ -645,7 +1040,22 @@ export type Database = {
         Args: { _action: string; _person_id: string }
         Returns: undefined
       }
+      my_centers: {
+        Args: never
+        Returns: {
+          id: string
+          name: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
+      my_staff_center_ids: { Args: never; Returns: string[] }
       regenerate_join_code: { Args: never; Returns: string }
+      save_sensitive: {
+        Args: { _d: Json; _id: string; _kind: string; _person_id: string }
+        Returns: string
+      }
+      switch_center: { Args: { _center_id: string }; Returns: undefined }
+      upcoming_appointments: { Args: { _days?: number }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "educador" | "profesional" | "familia"
