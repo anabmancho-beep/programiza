@@ -425,6 +425,7 @@ export type Database = {
         Args: { _action: string; _person_id: string }
         Returns: undefined
       }
+      regenerate_join_code: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin" | "educador" | "profesional" | "familia"

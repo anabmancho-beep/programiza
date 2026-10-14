@@ -15,6 +15,13 @@
       "when": 1791992979461,
       "tag": "0001_seed_demo_fn",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791993661444,
+      "tag": "0002_regenerate_join_code",
+      "breakpoints": true
     }
   ]
 }
