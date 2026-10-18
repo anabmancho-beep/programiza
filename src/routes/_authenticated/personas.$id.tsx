@@ -142,7 +142,7 @@ function PersonPage() {
       )}
       {saved.anonymized && <div className="mb-6"><Notice tone="health" title="Ficha anonimizada">Esta persona ha sido anonimizada y sus datos funcionales se han eliminado.</Notice></div>}
       <Tabs defaultValue="perfil">
-        <TabsList className="flex-wrap">
+        <TabsList className="h-auto w-full flex-wrap justify-start gap-1">
           <TabsTrigger value="perfil">Perfil funcional</TabsTrigger>
           <TabsTrigger value="consentimiento">Consentimiento</TabsTrigger>
           <TabsTrigger value="programaciones">Programaciones</TabsTrigger>
