@@ -67,9 +67,9 @@ function Index() {
         </div>
         <img
           src={portada}
-          alt="Aula luminosa de un centro educativo con mesas, materiales y espacio accesible"
-          width={1280}
-          height={960}
+          alt="Aula luminosa de un centro educativo con carteles en español: Diversas capacidades, mismos sueños"
+          width={1200}
+          height={896}
           className="rounded-2xl shadow-soft"
         />
       </section>
