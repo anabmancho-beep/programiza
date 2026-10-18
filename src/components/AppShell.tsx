@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { flushQueue } from "@/lib/offline-hoy";
 import { Home, Users, CalendarDays, Library, Building2, ShieldCheck, LogOut, Menu, X, Sprout, Sun, Images } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -31,6 +32,24 @@ export function AppShell({ children }: { children: ReactNode }) {
     enabled: !!me.data?.center,
     queryFn: async () => { const { data, error } = await supabase.rpc("my_centers"); if (error) throw error; return data; },
   });
+
+  // Envía los resultados pendientes al volver la conexión, en cualquier sección.
+  const uid = me.data?.userId;
+  useEffect(() => {
+    if (!uid) return;
+    const sync = async () => {
+      const n = await flushQueue(uid);
+      if (n) {
+        toast.success(n === 1 ? "1 resultado sincronizado" : `${n} resultados sincronizados`);
+        qc.invalidateQueries({ queryKey: ["hoy"] });
+        qc.invalidateQueries({ queryKey: ["results"] });
+      }
+    };
+    sync();
+    window.addEventListener("online", sync);
+    return () => window.removeEventListener("online", sync);
+  }, [uid, qc]);
+
 
   async function switchTo(cid: string) {
     const { error } = await supabase.rpc("switch_center", { _center_id: cid });
