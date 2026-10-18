@@ -8,7 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import portada from "@/assets/portada-educativa.jpg";
+import portada from "@/assets/portada-centro.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,11 +32,6 @@ const features = [
     icon: LineChart,
     title: "Seguimiento de resultados",
     text: "Registra lograda, con apoyo o no lograda, y consulta la evolución con gráficos.",
-  },
-  {
-    icon: Image,
-    title: "Pictogramas",
-    text: "Biblioteca básica de 500 pictogramas y las imágenes propias de tu centro.",
   },
   {
     icon: FileText,
@@ -63,14 +58,9 @@ function Index() {
         <div className="space-y-6">
           <h1 className="text-4xl font-semibold sm:text-5xl">Programaciones a la medida de cada persona</h1>
           <p className="text-lg text-muted-foreground">
-            La herramienta del equipo educativo: planificar el día con pictogramas, anotar cómo ha ido cada
+            La herramienta del equipo educativo: planificar el día, anotar cómo ha ido cada
             actividad y preparar los informes, todo en un solo sitio y sin perder de vista la privacidad.
           </p>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>Del objetivo anual al plan del día, siempre enlazados.</li>
-            <li>Resultado de cada actividad con el apoyo que hizo falta.</li>
-            <li>Todo lo generado con IA llega como borrador para que lo revise el equipo.</li>
-          </ul>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg"><Link to="/auth">Acceder</Link></Button>
             <Button asChild size="lg" variant="outline"><Link to="/privacidad">Privacidad y datos</Link></Button>
@@ -78,9 +68,9 @@ function Index() {
         </div>
         <img
           src={portada}
-          alt="Una educadora y un joven preparan juntos la programación con tarjetas de pictogramas y un panel semanal de actividades"
+          alt="Aula luminosa de un centro educativo con mesas, materiales y espacio accesible"
           width={1280}
-          height={896}
+          height={960}
           className="rounded-2xl shadow-soft"
         />
       </section>
