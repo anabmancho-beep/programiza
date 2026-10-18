@@ -37,15 +37,9 @@ export function getLibraryPicto(id: string | null | undefined): LibraryPicto | n
   return BY_ID.get(id) ?? null;
 }
 
-/** Minúsculas y sin tildes (la ñ se conserva). */
+/** Minúsculas y sin tildes ni diéresis. */
 export function normalizeText(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/ñ/g, "\u0000")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\u0000/g, "ñ")
-    .trim();
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
 
 const INDEX = PICTOGRAM_LIBRARY.map((p) => ({ p, text: normalizeText(`${p.word} ${p.meaning}`) }));
