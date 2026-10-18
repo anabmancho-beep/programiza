@@ -68,6 +68,8 @@ export function ActivityDialog({
         materials: a.materials || null,
         adaptations: a.adaptations || null,
         time_slot: a.time_slot || null,
+        pictogram_id: src === "center" ? a.pictogram_id ?? null : null,
+        library_picto: src === "library" && isLibraryId(a.library_picto) ? a.library_picto : null,
       });
       onOpenChange(false);
     } finally {
