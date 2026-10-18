@@ -124,6 +124,18 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
+    // Copia local de la app para abrirla sin conexión. No se activa en el editor ni en desarrollo.
+    if (!("serviceWorker" in navigator) || import.meta.env.DEV) return;
+    const inIframe = window.self !== window.top;
+    const isPreview = /id-preview--|lovableproject\.com/.test(location.hostname);
+    if (inIframe || isPreview) {
+      navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister()));
+      return;
+    }
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  }, []);
+
+  useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
