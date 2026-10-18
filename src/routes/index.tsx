@@ -3,7 +3,6 @@ import {
   Sprout,
   CalendarRange,
   LineChart,
-  Image,
   FileText,
   ShieldCheck,
 } from "lucide-react";
