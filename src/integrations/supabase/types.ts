@@ -60,6 +60,7 @@ export type Database = {
           created_at: string
           duration_min: number | null
           id: string
+          library_picto: string | null
           materials: string | null
           pictogram_id: string | null
           steps: string[]
@@ -73,6 +74,7 @@ export type Database = {
           created_at?: string
           duration_min?: number | null
           id?: string
+          library_picto?: string | null
           materials?: string | null
           pictogram_id?: string | null
           steps?: string[]
@@ -86,6 +88,7 @@ export type Database = {
           created_at?: string
           duration_min?: number | null
           id?: string
+          library_picto?: string | null
           materials?: string | null
           pictogram_id?: string | null
           steps?: string[]
@@ -630,6 +633,7 @@ export type Database = {
           day_of_week: number | null
           duration_min: number | null
           id: string
+          library_picto: string | null
           materials: string | null
           objective_id: string | null
           pictogram_id: string | null
@@ -652,6 +656,7 @@ export type Database = {
           day_of_week?: number | null
           duration_min?: number | null
           id?: string
+          library_picto?: string | null
           materials?: string | null
           objective_id?: string | null
           pictogram_id?: string | null
@@ -674,6 +679,7 @@ export type Database = {
           day_of_week?: number | null
           duration_min?: number | null
           id?: string
+          library_picto?: string | null
           materials?: string | null
           objective_id?: string | null
           pictogram_id?: string | null
