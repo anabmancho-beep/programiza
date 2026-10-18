@@ -26,7 +26,7 @@ export function LibraryPictoView({ id, size = "md", className }: { id: string | 
 
 const PAGE = 60;
 
-export function LibraryCard({ p, selected, onSelect }: { p: LibraryPicto; selected?: boolean; onSelect?: (p: LibraryPicto) => void }) {
+export function LibraryCard({ p, selected, onSelect }: { p: LibraryPicto; selected?: boolean; onSelect?: ((p: LibraryPicto) => void) | undefined }) {
   const content = (
     <>
       <span aria-hidden="true" className="text-5xl leading-none">{p.emoji}</span>
@@ -46,7 +46,7 @@ export function LibraryCard({ p, selected, onSelect }: { p: LibraryPicto; select
 }
 
 /** Buscador + filtro por categoría + rejilla paginada ("Mostrar más"). */
-export function LibraryBrowser({ selectedId, onSelect, compact, idPrefix = "lib" }: { selectedId?: string | null; onSelect?: (p: LibraryPicto) => void; compact?: boolean; idPrefix?: string }) {
+export function LibraryBrowser({ selectedId, onSelect, compact, idPrefix = "lib" }: { selectedId?: string | null | undefined; onSelect?: ((p: LibraryPicto) => void) | undefined; compact?: boolean; idPrefix?: string }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
   const [limit, setLimit] = useState(compact ? 24 : PAGE);

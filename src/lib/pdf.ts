@@ -14,7 +14,7 @@ function emojiImage(emoji: string): string | null {
     ctx.fillText(emoji, 48, 52);
     const px = ctx.getImageData(0, 0, 96, 96).data;
     let ink = false;
-    for (let i = 3; i < px.length; i += 4) if (px[i] > 0) { ink = true; break; }
+    for (let i = 3; i < px.length; i += 4) if ((px[i] ?? 0) > 0) { ink = true; break; }
     return ink ? c.toDataURL("image/png") : null;
   } catch { return null; }
 }
