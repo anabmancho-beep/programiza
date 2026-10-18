@@ -75,7 +75,7 @@ function Banco() {
                 {a.library_picto && <LibraryPictoView id={a.library_picto} size="sm" className="my-2" />}
                 <p className="text-sm text-muted-foreground">{label(AREAS, a.area)} · {a.duration_min ?? "?"} min · {a.support_level}</p>
                 {a.materials && <p className="mt-1 text-sm">Materiales: {a.materials}</p>}
-                <ol className="mt-2 flex-1 list-decimal pl-6 text-sm">{a.steps.map((s, i) => <li key={i}>{s}</li>)}</ol>
+                <ol className="mt-2 flex-1 list-decimal pl-6 text-sm">{(a.steps ?? []).map((s, i) => <li key={i}>{s}</li>)}</ol>
                 {a.adaptations && <p className="mt-2 text-sm"><span className="font-bold">Adaptaciones:</span> {a.adaptations}</p>}
                 <Button className="mt-4 self-start" variant="secondary" onClick={() => { setPlanId(""); setCopySrc({ title: a.title, area: a.area, duration_min: a.duration_min, support_level: a.support_level, materials: a.materials, steps: a.steps, adaptations: a.adaptations, pictogram_id: a.pictogram_id, library_picto: a.library_picto }); }}>Copiar a una programación</Button>
               </li>
@@ -88,11 +88,11 @@ function Banco() {
       <Dialog open={!!copySrc && !adaptOpen} onOpenChange={(o) => !o && setCopySrc(null)}>
         <DialogContent>
           <DialogHeader><DialogTitle>Copiar «{copySrc?.title}»</DialogTitle></DialogHeader>
-          {plans.isLoading ? <Loading /> : plans.error ? <ErrorBox error={plans.error} /> : plans.data!.length === 0 ? <p>No hay programaciones todavía.</p> : (
+          {plans.isLoading ? <Loading /> : plans.error ? <ErrorBox error={plans.error} /> : (plans.data ?? []).length === 0 ? <p>No hay programaciones todavía.</p> : (
             <Field id="tp" label="Programación de destino">
               <NativeSelect id="tp" value={planId} onChange={(e) => setPlanId(e.target.value)}>
                 <option value="">Selecciona…</option>
-                {plans.data!.map((p) => <option key={p.id} value={p.id}>{p.persons?.code ?? "Plantilla"} · {label(LEVELS, p.level)} · {p.title}</option>)}
+                {(plans.data ?? []).map((p) => <option key={p.id} value={p.id}>{p.persons?.code ?? "Plantilla"} · {label(LEVELS, p.level)} · {p.title}</option>)}
               </NativeSelect>
             </Field>
           )}
