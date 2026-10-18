@@ -67,7 +67,7 @@ function Pictos() {
   return (
     <div>
       <PageHeader title="Pictogramas" subtitle="Biblioteca básica incluida e imágenes propias del centro para las agendas visuales." />
-      <Notice title="Licencia de las imágenes">La biblioteca básica usa emojis estándar Unicode incluidos en la aplicación; su aspecto depende del dispositivo. No son pictogramas ARASAAC ni de terceros. Las imágenes que suba el centro necesitan licencia. No subas fotos en las que se reconozca a personas.</Notice>
+      <Notice title="Licencia de las imágenes">La biblioteca básica usa emojis estándar Unicode incluidos en la aplicación; su aspecto depende del dispositivo. Las imágenes que suba el centro necesitan licencia. No subas fotos en las que se reconozca a personas.</Notice>
       <Tabs defaultValue="biblioteca" className="mt-6">
         <TabsList>
           <TabsTrigger value="biblioteca">Biblioteca básica ({PICTOGRAM_LIBRARY.length})</TabsTrigger>
