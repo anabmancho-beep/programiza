@@ -60,10 +60,12 @@ export function LibraryBrowser({ selectedId, onSelect, compact, idPrefix = "lib"
           <Input id={`${idPrefix}-q`} aria-label="Buscar pictograma por palabra o significado" placeholder="Buscar: comer, autobús, alegre…" className="pl-9"
             value={q} onChange={(e) => { setQ(e.target.value); setLimit(compact ? 24 : PAGE); }} />
         </div>
+        <div className="sm:w-64">
         <NativeSelect id={`${idPrefix}-cat`} aria-label="Filtrar por categoría" value={cat} onChange={(e) => { setCat(e.target.value); setLimit(compact ? 24 : PAGE); }}>
           <option value="">Todas las categorías</option>
           {LIBRARY_CATEGORIES.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
         </NativeSelect>
+        </div>
       </div>
       <p className="text-sm text-muted-foreground" aria-live="polite">{results.length === 0 ? "" : `${results.length} pictograma${results.length === 1 ? "" : "s"}`}</p>
       {results.length === 0 ? (
