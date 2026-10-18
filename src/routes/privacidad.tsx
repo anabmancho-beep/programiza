@@ -22,8 +22,14 @@ function Privacy() {
         Este texto es un modelo orientativo. Debe revisarlo y adaptarlo el delegado o delegada de protección de datos (DPD) del centro antes de usar la aplicación con datos reales. Este prototipo solo debe contener datos ficticios.
       </Notice>
       <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Normativa aplicable</h2>
+        <p>Reglamento (UE) 2016/679 General de Protección de Datos (RGPD), Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD) y Ley 34/2002 de servicios de la sociedad de la información (LSSI-CE).</p>
+      </section>
+      <section className="space-y-2">
         <h2 className="text-xl font-semibold">Responsable del tratamiento</h2>
-        <p>El centro que utiliza Programiza es el responsable del tratamiento. Programiza actúa como herramienta de apoyo para planificar actividades.</p>
+        <p>El centro que utiliza Programiza es el responsable del tratamiento. Cada centro debe indicar a las personas atendidas y a sus familias su denominación, NIF, dirección y un correo de contacto.</p>
+        <p>Delegado o delegada de protección de datos (DPD): obligatorio para centros que traten a gran escala datos de salud o de personas vulnerables (art. 37 RGPD y art. 34 LOPDGDD). El centro debe facilitar su contacto.</p>
+        <p>Programiza actúa como encargado del tratamiento (art. 28 RGPD) y solo trata los datos siguiendo las instrucciones del centro, con quien debe firmarse un contrato de encargo del tratamiento.</p>
       </section>
       <section className="space-y-2">
         <h2 className="text-xl font-semibold">Qué datos tratamos</h2>
@@ -39,7 +45,7 @@ function Privacy() {
       </section>
       <section className="space-y-2">
         <h2 className="text-xl font-semibold">Base jurídica y finalidad</h2>
-        <p>Consentimiento explícito de la persona o de su representante legal (art. 9.2.a RGPD) para la planificación de apoyos y actividades en el centro. Sin consentimiento otorgado no se guardan diagnósticos ni se crean programaciones.</p>
+        <p>Consentimiento explícito de la persona o de su representante legal (art. 9.2.a RGPD) para la planificación de apoyos y actividades en el centro. Sin consentimiento otorgado no se guardan diagnósticos ni se crean programaciones. El consentimiento puede retirarse en cualquier momento, sin que afecte a lo tratado antes (art. 7.3 RGPD). Las personas menores de 14 años o con la capacidad de decisión apoyada lo otorgan a través de sus representantes legales o con las medidas de apoyo que correspondan (art. 7 LOPDGDD).</p>
       </section>
       <section className="space-y-2">
         <h2 className="text-xl font-semibold">Seguridad</h2>
@@ -62,12 +68,36 @@ function Privacy() {
         </ul>
       </section>
       <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Destinatarios y transferencias internacionales</h2>
+        <p>No se ceden datos a terceros salvo obligación legal. Proveedores que actúan como subencargados: alojamiento y base de datos en la nube, y el servicio de inteligencia artificial, que solo recibe datos no identificativos. Si algún proveedor estuviera fuera del Espacio Económico Europeo, la transferencia se ampara en decisiones de adecuación o cláusulas contractuales tipo de la Comisión Europea (arts. 44-46 RGPD).</p>
+      </section>
+      <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Decisiones automatizadas</h2>
+        <p>No se toman decisiones basadas únicamente en tratamientos automatizados ni se elaboran perfiles con efectos jurídicos (art. 22 RGPD). Toda propuesta de la IA la revisa y aprueba una persona del equipo.</p>
+      </section>
+      <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Almacenamiento en el dispositivo y cookies</h2>
+        <p>Programiza solo usa almacenamiento técnico imprescindible: la sesión iniciada, la copia del día para el modo sin conexión y los resultados pendientes de enviar. No usa cookies publicitarias ni de análisis, por lo que no requiere consentimiento de cookies (art. 22.2 LSSI-CE). Esta copia local se borra al cerrar sesión; no uses dispositivos compartidos sin cerrarla.</p>
+      </section>
+      <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Medidas de seguridad y evaluación de impacto</h2>
+        <p>Cifrado en tránsito y en reposo, control de acceso por roles, aislamiento entre centros, seudonimización y registro de accesos (art. 32 RGPD). Al tratar datos de salud de personas vulnerables, el centro debe realizar una evaluación de impacto (art. 35 RGPD) antes de usar la aplicación con datos reales.</p>
+      </section>
+      <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Brechas de seguridad</h2>
+        <p>Si se produce una brecha de seguridad, se comunicará al centro sin dilación para que pueda notificarla a la Agencia Española de Protección de Datos en un máximo de 72 horas y, si hay alto riesgo, a las personas afectadas (arts. 33 y 34 RGPD).</p>
+      </section>
+      <section className="space-y-2">
         <h2 className="text-xl font-semibold">Derechos</h2>
-        <p>Acceso, rectificación, supresión, limitación, portabilidad y oposición. La administración del centro puede exportar todos los datos de una persona, anonimizarla o eliminarla por completo. También puede presentarse una reclamación ante la Agencia Española de Protección de Datos (aepd.es).</p>
+        <p>Acceso, rectificación, supresión, limitación, portabilidad y oposición. La administración del centro puede exportar todos los datos de una persona, anonimizarla o eliminarla por completo. Los derechos se ejercen ante el centro, por escrito y acreditando la identidad, y se responden en el plazo de un mes (art. 12 RGPD). También puede presentarse una reclamación ante la Agencia Española de Protección de Datos (aepd.es).</p>
       </section>
       <section className="space-y-2">
         <h2 className="text-xl font-semibold">Conservación</h2>
-        <p>Los datos se conservan mientras dure la atención en el centro y, después, durante los plazos legales que determine el centro.</p>
+        <p>Los datos se conservan mientras dure la atención en el centro y, después, durante los plazos legales que determine el centro. Al terminar, los datos se suprimen o anonimizan.</p>
+      </section>
+      <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Aviso legal</h2>
+        <p>Titular del sitio (art. 10 LSSI-CE): el centro debe indicar su denominación social, NIF, domicilio, correo de contacto y datos registrales.</p>
       </section>
     </div>
   );
