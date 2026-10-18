@@ -23,7 +23,7 @@ const BTN: Record<string, string> = {
   no_realizada: "bg-muted text-foreground",
 };
 
-type HoyAct = { id: string; plan_id: string; title: string; time_slot: string | null; day_of_week: number | null; position: number; center_id: string; support_level: string | null; pictogram_id: string | null; done: string | undefined };
+type HoyAct = { id: string; plan_id: string; title: string; time_slot: string | null; day_of_week: number | null; position: number; center_id: string; support_level: string | null; pictogram_id: string | null; library_picto: string | null; done: string | undefined };
 type HoyPerson = { id: string; code: string; acts: HoyAct[] };
 
 async function fetchHoy(today: string, dow: number): Promise<HoyPerson[]> {
@@ -32,7 +32,7 @@ async function fetchHoy(today: string, dow: number): Promise<HoyPerson[]> {
   if (error) throw error;
   const valid = plans.filter((p) => p.persons?.consent_status === "otorgado");
   if (!valid.length) return [];
-  const { data: acts, error: e2 } = await supabase.from("plan_activities").select("id, plan_id, title, time_slot, day_of_week, position, center_id, support_level, pictogram_id")
+  const { data: acts, error: e2 } = await supabase.from("plan_activities").select("id, plan_id, title, time_slot, day_of_week, position, center_id, support_level, pictogram_id, library_picto")
     .in("plan_id", valid.map((p) => p.id)).eq("status", "aprobado");
   if (e2) throw e2;
   const todays = acts.filter((a) => { const pl = valid.find((p) => p.id === a.plan_id)!; return pl.level === "diaria" || a.day_of_week === dow; });

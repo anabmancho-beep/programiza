@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { LogOut, Sprout } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { LibraryPictoView } from "@/components/LibraryPicto";
 import { usePictoUrls } from "@/lib/pictos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { Field, NativeSelect } from "@/components/forms";
 import { Loading, ErrorBox, Empty, Notice } from "@/components/states";
 import { DAYS, fmtDate } from "@/lib/constants";
 
-type Week = { title: string; start: string; end: string; activities: { id: string; title: string; duration_min: number | null; day_of_week: number | null; time_slot: string | null; steps: string[]; pictogram_path: string | null }[] } | null;
+type Week = { title: string; start: string; end: string; activities: { id: string; title: string; duration_min: number | null; day_of_week: number | null; time_slot: string | null; steps: string[]; pictogram_path: string | null; library_picto?: string | null }[] } | null;
 type Rep = { id: string; period_start: string; period_end: string; content: string; approved_at: string };
 
 const localToday = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
@@ -71,6 +72,7 @@ export function FamilyHome({ onSignOut }: { onSignOut: () => void }) {
                             <ul className="space-y-2">{list.map((a) => (
                               <li key={a.id} className="flex items-center gap-3 rounded-lg border p-2">
                                 {a.pictogram_path && urls.data?.[a.pictogram_path] && <img src={urls.data[a.pictogram_path]} alt="" className="h-12 w-12 object-contain" />}
+                                {!a.pictogram_path && a.library_picto && <LibraryPictoView id={a.library_picto} size="sm" />}
                                 <span>{a.time_slot && <span className="mr-1 text-muted-foreground">{a.time_slot.slice(0, 5)}</span>}<span className="font-bold">{a.title}</span></span>
                               </li>
                             ))}</ul>

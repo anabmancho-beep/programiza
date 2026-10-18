@@ -30,7 +30,7 @@ export function BankPicker({ open, onOpenChange, onPick }: { open: boolean; onOp
             {(q.data ?? []).filter((a) => !area || a.area === area).map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
                 <div><p className="font-bold">{a.title}</p><p className="text-sm text-muted-foreground">{label(AREAS, a.area)} · {a.duration_min ?? "?"} min</p></div>
-                <Button size="sm" onClick={() => { onOpenChange(false); onPick({ title: a.title, area: a.area, duration_min: a.duration_min, support_level: a.support_level, materials: a.materials, steps: a.steps, adaptations: a.adaptations }); }}>Copiar y adaptar</Button>
+                <Button size="sm" onClick={() => { onOpenChange(false); onPick({ title: a.title, area: a.area, duration_min: a.duration_min, support_level: a.support_level, materials: a.materials, steps: a.steps, adaptations: a.adaptations, pictogram_id: a.pictogram_id, library_picto: a.library_picto }); }}>Copiar y adaptar</Button>
               </li>
             ))}
           </ul>
