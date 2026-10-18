@@ -19,3 +19,4 @@
 - Family accounts (role familia) read only through family_* RPCs returning whitelisted columns; staff-only RLS on every table stays unchanged — avoids leaking internal notes via direct table reads.
 - Multi-center: profiles.center_id is the active center; user_roles holds one row per center and switch_center() changes it — all RLS keeps using current_center_id().
 - Pictogram files live in private bucket "pictogramas" under <center_id>/ and are shown via signed URLs.
+- The basic pictogram library is bundled static data in src/lib/pictogram-library.ts (ids lib-NNN, stored in library_picto columns, mutually exclusive with pictogram_id via CHECK) — works offline and never touches external services.
