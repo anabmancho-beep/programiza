@@ -34,7 +34,7 @@ function Privacy() {
           <li>Datos de las cuentas del equipo (correo y nombre) y registro de accesos a las fichas.</li>
           <li>Registro de conductas (antecedente, conducta, consecuencia) y plan de anticipación: solo los ven y editan profesionales y la administración.</li>
           <li>Medicación prescrita y citas médicas, solo informativas y copiadas de la pauta del profesional sanitario: solo profesionales y administración. La aplicación no calcula dosis ni da recomendaciones sobre medicación.</li>
-          <li>Pictogramas e imágenes subidos por el centro, que deben ser propios o con licencia de uso y no mostrar a personas reconocibles.</li>
+          <li>Pictogramas: La biblioteca básica usa emojis estándar Unicode incluidos en la aplicación; su aspecto depende del dispositivo. No son pictogramas ARASAAC ni de terceros. Las imágenes que suba el centro necesitan licencia. Las imágenes subidas no deben mostrar a personas reconocibles. La biblioteca básica no se envía a ningún servicio externo.</li>
         </ul>
       </section>
       <section className="space-y-2">

@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/forms";
 import { PageHeader, Loading, ErrorBox, Empty, Notice } from "@/components/states";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LibraryBrowser } from "@/components/LibraryPicto";
+import { PICTOGRAM_LIBRARY } from "@/lib/pictogram-library";
 import { errMsg } from "@/lib/constants";
 
 export const Route = createFileRoute("/_authenticated/pictogramas")({
@@ -63,8 +66,15 @@ function Pictos() {
 
   return (
     <div>
-      <PageHeader title="Pictogramas" subtitle="Imágenes propias del centro para las agendas visuales. Se pueden reutilizar en cualquier actividad." />
-      <Notice title="Licencia de las imágenes">Sube solo imágenes propias o de las que el centro tenga licencia de uso (por ejemplo, pictogramas con licencia que permita este uso, respetando su atribución). Programiza no incluye ni descarga pictogramas de terceros. No subas fotos en las que se reconozca a personas.</Notice>
+      <PageHeader title="Pictogramas" subtitle="Biblioteca básica incluida e imágenes propias del centro para las agendas visuales." />
+      <Notice title="Licencia de las imágenes">La biblioteca básica usa emojis estándar Unicode incluidos en la aplicación; su aspecto depende del dispositivo. No son pictogramas ARASAAC ni de terceros. Las imágenes que suba el centro necesitan licencia. No subas fotos en las que se reconozca a personas.</Notice>
+      <Tabs defaultValue="biblioteca" className="mt-6">
+        <TabsList>
+          <TabsTrigger value="biblioteca">Biblioteca básica ({PICTOGRAM_LIBRARY.length})</TabsTrigger>
+          <TabsTrigger value="propios">Propios del centro</TabsTrigger>
+        </TabsList>
+        <TabsContent value="biblioteca" className="mt-4"><LibraryBrowser /></TabsContent>
+        <TabsContent value="propios">
       <form onSubmit={upload} className="my-6 grid gap-4 rounded-xl border bg-card p-5 sm:grid-cols-2">
         <Field id="pn" label="Nombre"><Input id="pn" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} placeholder="Lavarse las manos" /></Field>
         <Field id="pf" label="Imagen (PNG, JPG, WebP o SVG, máx. 2 MB)"><Input id="pf" type="file" accept={TYPES.join(",")} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></Field>
@@ -85,6 +95,8 @@ function Pictos() {
           ))}
         </ul>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

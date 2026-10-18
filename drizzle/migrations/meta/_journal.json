@@ -43,6 +43,13 @@
       "when": 1791996333175,
       "tag": "0005_pictogramas_familias_conductas_salud_multicentro",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792341390044,
+      "tag": "0006_library_picto",
+      "breakpoints": true
     }
   ]
 }

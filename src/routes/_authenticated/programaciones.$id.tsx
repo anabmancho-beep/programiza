@@ -21,6 +21,7 @@ import { Field, NativeSelect } from "@/components/forms";
 import { PageHeader, Loading, ErrorBox, Empty, Notice } from "@/components/states";
 import { PlanCreateDialog } from "@/components/PlanCreateDialog";
 import { ActivityDialog, type ActivityInput } from "@/components/ActivityDialog";
+import { LibraryPictoView } from "@/components/LibraryPicto";
 import { BankPicker } from "@/components/BankPicker";
 import { AREAS, CHILD_LEVEL, DAYS, LEVELS, errMsg, fmtDate, label } from "@/lib/constants";
 
@@ -263,7 +264,7 @@ function PlanPage() {
                 return (
                   <li key={a.id} className="flex flex-col items-center rounded-2xl border-2 bg-card p-5 text-center">
                     <span className="text-lg font-bold text-primary">{i + 1}{a.time_slot ? ` · ${a.time_slot.slice(0, 5)}` : ""}</span>
-                    {u ? <img src={u} alt="" className="my-3 h-40 w-40 object-contain" /> : <div className="my-3 flex h-40 w-40 items-center justify-center rounded-xl bg-muted text-sm text-muted-foreground">Sin pictograma</div>}
+                    {u ? <img src={u} alt="" className="my-3 h-40 w-40 object-contain" /> : a.library_picto ? <LibraryPictoView id={a.library_picto} size="lg" className="my-3" /> : <div className="my-3 flex h-40 w-40 items-center justify-center rounded-xl bg-muted text-sm text-muted-foreground">Sin pictograma</div>}
                     <p className="text-2xl font-bold">{a.title}</p>
                   </li>
                 );

@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Field, NativeSelect } from "@/components/forms";
 import { PageHeader, Loading, ErrorBox, Empty } from "@/components/states";
 import { ActivityDialog, type ActivityInput } from "@/components/ActivityDialog";
+import { LibraryPictoView } from "@/components/LibraryPicto";
 import { bankQuery } from "@/components/BankPicker";
 import { AREAS, LEVELS, errMsg, label } from "@/lib/constants";
 
@@ -71,11 +72,12 @@ function Banco() {
             {list.map((a) => (
               <li key={a.id} className="flex flex-col rounded-xl border bg-card p-5 shadow-soft">
                 <div className="flex items-start justify-between gap-2"><h2 className="text-lg font-semibold">{a.title}</h2>{a.center_id ? <Badge variant="secondary">Del centro</Badge> : <Badge variant="outline">Genérica</Badge>}</div>
+                {a.library_picto && <LibraryPictoView id={a.library_picto} size="sm" className="my-2" />}
                 <p className="text-sm text-muted-foreground">{label(AREAS, a.area)} · {a.duration_min ?? "?"} min · {a.support_level}</p>
                 {a.materials && <p className="mt-1 text-sm">Materiales: {a.materials}</p>}
                 <ol className="mt-2 flex-1 list-decimal pl-6 text-sm">{a.steps.map((s, i) => <li key={i}>{s}</li>)}</ol>
                 {a.adaptations && <p className="mt-2 text-sm"><span className="font-bold">Adaptaciones:</span> {a.adaptations}</p>}
-                <Button className="mt-4 self-start" variant="secondary" onClick={() => { setPlanId(""); setCopySrc({ title: a.title, area: a.area, duration_min: a.duration_min, support_level: a.support_level, materials: a.materials, steps: a.steps, adaptations: a.adaptations }); }}>Copiar a una programación</Button>
+                <Button className="mt-4 self-start" variant="secondary" onClick={() => { setPlanId(""); setCopySrc({ title: a.title, area: a.area, duration_min: a.duration_min, support_level: a.support_level, materials: a.materials, steps: a.steps, adaptations: a.adaptations, pictogram_id: a.pictogram_id, library_picto: a.library_picto }); }}>Copiar a una programación</Button>
               </li>
             ))}
           </ul>

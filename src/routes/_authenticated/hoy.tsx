@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { CheckCircle2, CloudOff, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/me";
+import { LibraryPictoView } from "@/components/LibraryPicto";
 import { usePictograms, usePictoUrls } from "@/lib/pictos";
 import { PageHeader, Loading, ErrorBox, Empty } from "@/components/states";
 import { RESULTS, errMsg } from "@/lib/constants";
@@ -23,7 +24,7 @@ const BTN: Record<string, string> = {
   no_realizada: "bg-muted text-foreground",
 };
 
-type HoyAct = { id: string; plan_id: string; title: string; time_slot: string | null; day_of_week: number | null; position: number; center_id: string; support_level: string | null; pictogram_id: string | null; done: string | undefined };
+type HoyAct = { id: string; plan_id: string; title: string; time_slot: string | null; day_of_week: number | null; position: number; center_id: string; support_level: string | null; pictogram_id: string | null; library_picto: string | null; done: string | undefined };
 type HoyPerson = { id: string; code: string; acts: HoyAct[] };
 
 async function fetchHoy(today: string, dow: number): Promise<HoyPerson[]> {
@@ -32,7 +33,7 @@ async function fetchHoy(today: string, dow: number): Promise<HoyPerson[]> {
   if (error) throw error;
   const valid = plans.filter((p) => p.persons?.consent_status === "otorgado");
   if (!valid.length) return [];
-  const { data: acts, error: e2 } = await supabase.from("plan_activities").select("id, plan_id, title, time_slot, day_of_week, position, center_id, support_level, pictogram_id")
+  const { data: acts, error: e2 } = await supabase.from("plan_activities").select("id, plan_id, title, time_slot, day_of_week, position, center_id, support_level, pictogram_id, library_picto")
     .in("plan_id", valid.map((p) => p.id)).eq("status", "aprobado");
   if (e2) throw e2;
   const todays = acts.filter((a) => { const pl = valid.find((p) => p.id === a.plan_id)!; return pl.level === "diaria" || a.day_of_week === dow; });
@@ -153,7 +154,7 @@ function Hoy() {
                   return (
                     <li key={a.id} className="rounded-2xl border bg-card p-4">
                       <div className="flex items-center gap-3">
-                        {u && <img src={u} alt="" className="h-16 w-16 shrink-0 rounded object-contain" />}
+                        {u ? <img src={u} alt="" className="h-16 w-16 shrink-0 rounded object-contain" /> : a.library_picto ? <LibraryPictoView id={a.library_picto} size="sm" className="h-16 w-16" /> : null}
                         <div>
                           {a.time_slot && <p className="text-muted-foreground">{a.time_slot.slice(0, 5)}</p>}
                           <p className="text-xl font-bold">{a.title}</p>

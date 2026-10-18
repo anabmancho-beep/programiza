@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Field, NativeSelect } from "@/components/forms";
 import { AREAS, DAYS, SUPPORT_LEVELS } from "@/lib/constants";
 import { usePictograms, usePictoUrls } from "@/lib/pictos";
+import { LibraryBrowser, LibraryPictoView } from "@/components/LibraryPicto";
+import { isLibraryId } from "@/lib/pictogram-library";
 
 export type ActivityInput = {
   title: string;
@@ -20,6 +22,7 @@ export type ActivityInput = {
   time_slot?: string | null;
   objective_id?: string | null;
   pictogram_id?: string | null;
+  library_picto?: string | null;
 };
 
 const empty: ActivityInput = { title: "", area: "autonomia_personal", duration_min: 30, support_level: "Supervisión", materials: "", steps: [], adaptations: "", day_of_week: null, time_slot: "" };
@@ -38,6 +41,7 @@ export function ActivityDialog({
   const [a, setA] = useState<ActivityInput>(empty);
   const [steps, setSteps] = useState("");
   const [busy, setBusy] = useState(false);
+  const [src, setSrc] = useState<"none" | "center" | "library">("none");
   const pictos = usePictograms(open);
   const pictoUrls = usePictoUrls((pictos.data ?? []).map((p) => p.storage_path));
 
@@ -46,6 +50,7 @@ export function ActivityDialog({
       const v = { ...empty, ...(initial ?? {}) } as ActivityInput;
       setA(v);
       setSteps((v.steps ?? []).join("\n"));
+      setSrc(v.library_picto ? "library" : v.pictogram_id ? "center" : "none");
     }
   }, [open, initial]);
 
@@ -63,6 +68,8 @@ export function ActivityDialog({
         materials: a.materials || null,
         adaptations: a.adaptations || null,
         time_slot: a.time_slot || null,
+        pictogram_id: src === "center" ? a.pictogram_id ?? null : null,
+        library_picto: src === "library" && isLibraryId(a.library_picto) ? a.library_picto : null,
       });
       onOpenChange(false);
     } finally {
@@ -92,17 +99,41 @@ export function ActivityDialog({
           {objectives && objectives.length > 0 && (
             <div className="sm:col-span-2"><Field id="a-obj" label="Objetivo al que contribuye"><NativeSelect id="a-obj" value={a.objective_id ?? ""} onChange={(e) => setA({ ...a, objective_id: e.target.value || null })}><option value="">Ninguno</option>{objectives.map((o) => <option key={o.id} value={o.id}>{o.description}</option>)}</NativeSelect></Field></div>
           )}
-          <div className="sm:col-span-2">
-            <Field id="a-picto" label="Pictograma (opcional)" hint="Imágenes subidas por el centro en «Pictogramas».">
-              <div className="flex items-center gap-3">
-                <NativeSelect id="a-picto" value={a.pictogram_id ?? ""} onChange={(e) => setA({ ...a, pictogram_id: e.target.value || null })}>
-                  <option value="">Sin pictograma</option>
-                  {(pictos.data ?? []).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-                </NativeSelect>
-                {(() => { const p = pictos.data?.find((x) => x.id === a.pictogram_id); const u = p && pictoUrls.data?.[p.storage_path]; return u ? <img src={u} alt="" className="h-14 w-14 rounded border object-contain" /> : null; })()}
+          <fieldset className="space-y-3 sm:col-span-2">
+            <legend className="font-bold">Pictograma (opcional)</legend>
+            <div className="flex flex-wrap gap-4" role="radiogroup" aria-label="Origen del pictograma">
+              {([["none", "Sin pictograma"], ["center", "Propio del centro"], ["library", "Biblioteca básica"]] as const).map(([v, l]) => (
+                <label key={v} className="flex items-center gap-2">
+                  <input type="radio" name="picto-src" className="h-5 w-5" checked={src === v} onChange={() => {
+                    setSrc(v);
+                    if (v !== "center") setA((s) => ({ ...s, pictogram_id: null }));
+                    if (v !== "library") setA((s) => ({ ...s, library_picto: null }));
+                  }} />
+                  {l}
+                </label>
+              ))}
+            </div>
+            {src === "center" && (
+              <Field id="a-picto" label="Pictograma del centro" hint="Imágenes subidas por el centro en «Pictogramas».">
+                <div className="flex items-center gap-3">
+                  <NativeSelect id="a-picto" value={a.pictogram_id ?? ""} onChange={(e) => setA({ ...a, pictogram_id: e.target.value || null, library_picto: null })}>
+                    <option value="">Elige…</option>
+                    {(pictos.data ?? []).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </NativeSelect>
+                  {(() => { const p = pictos.data?.find((x) => x.id === a.pictogram_id); const u = p && pictoUrls.data?.[p.storage_path]; return u ? <img src={u} alt="" className="h-14 w-14 rounded border object-contain" /> : null; })()}
+                </div>
+                {pictos.isLoading && <p className="text-sm text-muted-foreground">Cargando pictogramas…</p>}
+                {pictos.error && <p className="text-sm text-destructive">No se han podido cargar los pictogramas del centro.</p>}
+                {pictos.data && pictos.data.length === 0 && <p className="text-sm text-muted-foreground">El centro aún no ha subido pictogramas.</p>}
+              </Field>
+            )}
+            {src === "library" && (
+              <div className="space-y-2">
+                {a.library_picto && <div className="flex items-center gap-3"><LibraryPictoView id={a.library_picto} size="md" /><span className="text-sm">Seleccionado</span></div>}
+                <LibraryBrowser compact idPrefix="a-lib" selectedId={a.library_picto} onSelect={(p) => setA({ ...a, library_picto: p.id, pictogram_id: null })} />
               </div>
-            </Field>
-          </div>
+            )}
+          </fieldset>
           <div className="sm:col-span-2"><Field id="a-steps" label="Pasos (uno por línea)"><Textarea id="a-steps" rows={5} value={steps} onChange={(e) => setSteps(e.target.value)} /></Field></div>
           <div className="sm:col-span-2"><Field id="a-adapt" label="Adaptaciones" hint="Describe apoyos, no datos identificativos."><Textarea id="a-adapt" rows={2} maxLength={1000} value={a.adaptations ?? ""} onChange={(e) => setA({ ...a, adaptations: e.target.value })} /></Field></div>
         </form>
