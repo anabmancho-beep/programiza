@@ -32,7 +32,7 @@ export function enqueue(uid: string, r: PendingResult) {
 export function clearHoyCaches() {
   for (let i = localStorage.length - 1; i >= 0; i--) {
     const k = localStorage.key(i);
-    if (k?.startsWith("hoy-cache:")) localStorage.removeItem(k);
+    if (k?.startsWith("hoy-cache:") || k?.startsWith("me-cache:")) localStorage.removeItem(k);
   }
 }
 
