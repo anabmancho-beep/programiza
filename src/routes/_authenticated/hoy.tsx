@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { CheckCircle2, CloudOff, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/lib/me";
+import { LibraryPictoView } from "@/components/LibraryPicto";
 import { usePictograms, usePictoUrls } from "@/lib/pictos";
 import { PageHeader, Loading, ErrorBox, Empty } from "@/components/states";
 import { RESULTS, errMsg } from "@/lib/constants";
@@ -153,7 +154,7 @@ function Hoy() {
                   return (
                     <li key={a.id} className="rounded-2xl border bg-card p-4">
                       <div className="flex items-center gap-3">
-                        {u && <img src={u} alt="" className="h-16 w-16 shrink-0 rounded object-contain" />}
+                        {u ? <img src={u} alt="" className="h-16 w-16 shrink-0 rounded object-contain" /> : a.library_picto ? <LibraryPictoView id={a.library_picto} size="sm" className="h-16 w-16" /> : null}
                         <div>
                           {a.time_slot && <p className="text-muted-foreground">{a.time_slot.slice(0, 5)}</p>}
                           <p className="text-xl font-bold">{a.title}</p>

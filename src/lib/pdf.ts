@@ -1,5 +1,23 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { getLibraryPicto } from "@/lib/pictogram-library";
+
+/** Dibuja el emoji en un lienzo y devuelve una imagen PNG; null si el navegador no puede. */
+function emojiImage(emoji: string): string | null {
+  try {
+    const c = document.createElement("canvas");
+    c.width = c.height = 96;
+    const ctx = c.getContext("2d");
+    if (!ctx) return null;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = '72px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    ctx.fillText(emoji, 48, 52);
+    const px = ctx.getImageData(0, 0, 96, 96).data;
+    let ink = false;
+    for (let i = 3; i < px.length; i += 4) if (px[i] > 0) { ink = true; break; }
+    return ink ? c.toDataURL("image/png") : null;
+  } catch { return null; }
+}
 
 const FOOTER = "Documento confidencial. Contiene datos de salud. Uso exclusivo del centro.";
 
@@ -26,18 +44,27 @@ function header(doc: jsPDF, title: string, subtitle: string) {
   doc.text(subtitle, 14, 25);
 }
 
-export type PdfActivity = { title: string; area: string; duration_min: number | null; support_level: string | null; materials: string | null; steps: string[]; adaptations: string | null; day_of_week: number | null; time_slot: string | null };
+export type PdfActivity = { title: string; area: string; duration_min: number | null; support_level: string | null; materials: string | null; steps: string[]; adaptations: string | null; day_of_week: number | null; time_slot: string | null; library_picto?: string | null };
 
 export function dailyAgendaPdf(code: string, title: string, date: string, acts: PdfActivity[]) {
   const doc = new jsPDF();
   header(doc, `Agenda diaria · ${code}`, `${title} · ${date}`);
   autoTable(doc, {
     startY: 32,
-    head: [["#", "Hora", "Actividad", "Pasos", "Apoyo / materiales"]],
-    body: acts.map((a, i) => [String(i + 1), a.time_slot?.slice(0, 5) ?? "", `${a.title}\n(${a.area}, ${a.duration_min ?? "?"} min)`, a.steps.map((s, k) => `${k + 1}. ${s}`).join("\n"), [a.support_level, a.materials, a.adaptations].filter(Boolean).join("\n")]),
+    head: [["#", "Hora", "Pictograma", "Actividad", "Pasos", "Apoyo / materiales"]],
+    body: acts.map((a, i) => [String(i + 1), a.time_slot?.slice(0, 5) ?? "", getLibraryPicto(a.library_picto)?.word ?? "", `${a.title}\n(${a.area}, ${a.duration_min ?? "?"} min)`, a.steps.map((s, k) => `${k + 1}. ${s}`).join("\n"), [a.support_level, a.materials, a.adaptations].filter(Boolean).join("\n")]),
     styles: { fontSize: 9, cellPadding: 2, valign: "top" },
     headStyles: { fillColor: [62, 104, 86] },
+    columnStyles: { 2: { cellWidth: 26, minCellHeight: 24, halign: "center", valign: "bottom" } },
     margin: { bottom: 16 },
+    didDrawCell: (d) => {
+      if (d.section !== "body" || d.column.index !== 2) return;
+      const p = getLibraryPicto(acts[d.row.index]?.library_picto);
+      if (!p) return;
+      const img = emojiImage(p.emoji);
+      if (!img) return; // sin emoji: queda solo la palabra
+      try { doc.addImage(img, "PNG", d.cell.x + d.cell.width / 2 - 7, d.cell.y + 2, 14, 14); } catch { /* solo palabra */ }
+    },
   });
   footer(doc);
   doc.save(`agenda-diaria-${code}-${date}.pdf`);
@@ -52,7 +79,7 @@ export function weeklyAgendaPdf(code: string, title: string, range: string, acts
   autoTable(doc, {
     startY: 32,
     head: [["Franja", ...usedDays.map((d) => DAYS[d - 1] ?? "")]],
-    body: slots.map((s) => [s, ...usedDays.map((d) => acts.filter((a) => a.day_of_week === d && (a.time_slot?.slice(0, 5) ?? "Sin hora") === s).map((a) => `${a.title} (${a.duration_min ?? "?"}′, ${a.support_level ?? ""})`).join("\n"))]),
+    body: slots.map((s) => [s, ...usedDays.map((d) => acts.filter((a) => a.day_of_week === d && (a.time_slot?.slice(0, 5) ?? "Sin hora") === s).map((a) => `${getLibraryPicto(a.library_picto) ? `[${getLibraryPicto(a.library_picto)!.word}] ` : ""}${a.title} (${a.duration_min ?? "?"}′, ${a.support_level ?? ""})`).join("\n"))]),
     styles: { fontSize: 9, cellPadding: 2, valign: "top" },
     headStyles: { fillColor: [62, 104, 86] },
     margin: { bottom: 16 },
